@@ -9,11 +9,11 @@ import SwiftUI
 import SwiftfulRouting
 
 struct BreakDownView: View {
-    
+
     @StateObject private var vm: BreakDownViewModel
 
-    init(router: AnyRouter) {
-        _vm = StateObject(wrappedValue: BreakDownViewModel(router: router))
+    init(router: AnyRouter, scenarioResponse: DetailReportDataModel.ScenarioAttemptResponse) {
+        _vm = StateObject(wrappedValue: BreakDownViewModel(router: router, scenarioAttemptResponseModel: scenarioResponse))
     }
     
     var body: some View {
@@ -42,7 +42,6 @@ struct BreakDownView: View {
 
 #Preview {
     RouterView { router in
-        BreakDownView(router: router)
+        BreakDownView(router: router, scenarioResponse: .preview)
     }
-   
 }

@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+enum Icon {
+    case system(name: String)
+    case bundle(name: String, bundle: Bundle? = nil)
+}

@@ -11,14 +11,14 @@ import SwiftfulRouting
 
 class BehaviourAnalysisViewModel: RoutableViewModel {
 
-    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse = .preview
-    
+    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse
+
     //Computed Properties
-    
+
     var behaviourAttemptHeaderTitle: String {
         scenarioAttemptResponseModel.behaviourAnalysisTitle
     }
-    
+
     var getCalculatedLineGraphData: [
         (
             config: LineChartConfiguration.MetricLineChartConfig,
@@ -28,18 +28,19 @@ class BehaviourAnalysisViewModel: RoutableViewModel {
     ] {
         scenarioAttemptResponseModel.getCalculatedbehaviourChartModels
     }
-    
+
     var improvementRequiredData: [String: [String]] {
         scenarioAttemptResponseModel.improvementsRequired ?? [:]
     }
-    
+
     var whatWentWellInfoText: String? {
         scenarioAttemptResponseModel.whatWentWell
     }
 
     // MARK: - Init
 
-    init(router: AnyRouter) {
+    init(router: AnyRouter, scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse) {
+        self.scenarioAttemptResponseModel = scenarioAttemptResponseModel
         super.init(router: router)
     }
 }

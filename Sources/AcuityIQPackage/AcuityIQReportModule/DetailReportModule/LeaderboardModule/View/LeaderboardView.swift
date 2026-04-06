@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftUIUtilities
 
 struct LeaderboardView: View {
-    
+
     @StateObject private var vm: LeaderboardViewModel
-    
-    init(router: AnyRouter) {
+
+    init(router: AnyRouter, leaderboardResponse: [LeaderboardDataModel.LeaderboardAttempt]) {
         _vm = StateObject(
-            wrappedValue: LeaderboardViewModel(router: router)
+            wrappedValue: LeaderboardViewModel(router: router, leaderboardResponse: leaderboardResponse)
         )
     }
     
@@ -47,7 +47,7 @@ struct LeaderboardView: View {
 
 #Preview {
     RouterView { router in
-        LeaderboardView(router: router)
+        LeaderboardView(router: router, leaderboardResponse: LeaderboardDataModel.LeaderboardAttempt.previewArray)
     }
 }
 

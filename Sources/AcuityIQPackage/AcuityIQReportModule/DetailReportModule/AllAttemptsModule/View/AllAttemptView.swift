@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftfulRouting
 
 struct AllAttemptsView: View {
-    
+
     @StateObject private var vm: AllAttemptViewModel
-    
-    init(router: AnyRouter) {
+
+    init(router: AnyRouter, allAttemptResponse: AllAttemptDataModel.AllAttemptResponse) {
         _vm = StateObject(
-            wrappedValue: AllAttemptViewModel(router: router)
+            wrappedValue: AllAttemptViewModel(router: router, allAttemptResponse: allAttemptResponse)
         )
     }
     
@@ -74,7 +74,6 @@ struct AllAttemptsView: View {
 
 #Preview {
     RouterView { router in
-        AllAttemptsView(router: router)
+        AllAttemptsView(router: router, allAttemptResponse: .preview)
     }
-  
 }

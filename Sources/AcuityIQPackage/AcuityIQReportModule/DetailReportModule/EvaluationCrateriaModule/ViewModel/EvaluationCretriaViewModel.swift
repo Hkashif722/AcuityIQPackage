@@ -11,7 +11,7 @@ import SwiftfulRouting
 
 class EvaluationCretriaViewModel: RoutableViewModel {
 
-    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse = .preview
+    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse
 
     // MARK: - Filter State
 
@@ -40,7 +40,8 @@ class EvaluationCretriaViewModel: RoutableViewModel {
 
     // MARK: - Init
 
-    init(router: AnyRouter) {
+    init(router: AnyRouter, scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse) {
+        self.scenarioAttemptResponseModel = scenarioAttemptResponseModel
         super.init(router: router)
     }
 }

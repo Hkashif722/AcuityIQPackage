@@ -12,21 +12,19 @@ import SwiftUI
 
 class LeaderboardViewModel: RoutableViewModel {
 
-    
-    let leaderboardResponseModel: [LeaderboardDataModel.LeaderboardAttempt] = LeaderboardDataModel.LeaderboardAttempt.previewArray
-    
+    let leaderboardResponseModel: [LeaderboardDataModel.LeaderboardAttempt]
+
     //MARK: Computed Properties
-    
+
     var getHeaderGreadient: [Gradient.Stop] {
         LeaderboardDataModel.LeaderboardAttempt.leaderBoardHeaderGradientStop
     }
-    
 
-    //MARK: Computed Properties
-    init(router: AnyRouter) {
+    // MARK: - Init
+    init(router: AnyRouter, leaderboardResponse: [LeaderboardDataModel.LeaderboardAttempt]) {
+        self.leaderboardResponseModel = leaderboardResponse
         super.init(router: router)
     }
-    
 }
 
 //MARK: Handle Action

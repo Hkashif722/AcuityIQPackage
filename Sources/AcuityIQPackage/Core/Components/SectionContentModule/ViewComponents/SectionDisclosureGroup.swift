@@ -10,10 +10,11 @@ import SwiftUIUtilities
 
 struct SectionDisclosureGroup<Content: View>: View {
     
-    @ViewBuilder var content: Content
+  
     let sectionTitle: String
     let sectionStatus: String
     let tagColor: Color
+    @ViewBuilder var content: Content
     
     @State private var isExpanded = false
     
@@ -80,17 +81,16 @@ struct SectionDisclosureGroup<Content: View>: View {
 
 #Preview {
     SectionDisclosureGroup(
-        content: {
-            Text(
-                "Detailed insights go here..."
-            )
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-        },
         sectionTitle: "Clarity",
         sectionStatus: "Consistent",
         tagColor: .green
-    )
+    ) {
+        Text(
+            "Detailed insights go here..."
+        )
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+    }
     .padding(
             .horizontal
         )

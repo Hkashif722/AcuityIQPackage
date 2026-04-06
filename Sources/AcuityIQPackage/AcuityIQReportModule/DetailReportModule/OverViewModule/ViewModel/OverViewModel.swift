@@ -12,10 +12,11 @@ import SwiftfulRouting
 class OverViewModel: RoutableViewModel {
 
     
-    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse = .preview
+    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse
     
   
-    init(router: AnyRouter) {
+    init(router: AnyRouter, scenarioAttemptResponseModel:  DetailReportDataModel.ScenarioAttemptResponse) {
+        self.scenarioAttemptResponseModel = scenarioAttemptResponseModel
         super.init(router: router)
     }
 }

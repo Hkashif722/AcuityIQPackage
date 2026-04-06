@@ -1,3 +1,12 @@
+//
+//  GaugeSegmentProtocol.swift
+//  AcuityIQPackage
+//
+//  Created by Kashif Hussain on 31/03/26.
+//
+
+import SwiftUI
+
 protocol GaugeSegmentProtocol {
     var color: Color { get }
     var title: String { get }

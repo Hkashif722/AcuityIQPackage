@@ -1,3 +1,12 @@
+//
+//  GaugeExample.swift
+//  AcuityIQPackage
+//
+//  Created by Kashif Hussain on 31/03/26.
+//
+
+import SwiftUI
+
 @available(iOS 16.0, *)
 struct GaugeExample: View {
     
@@ -21,6 +30,13 @@ struct GaugeExample: View {
         ) { value in
             String(format: "%.1f", Double(value))
         }
-        .frame(width: 220)
+        .frame(width: 200)
+        .cardStylePkg(padding: 10)
+        .scaleEffect(0.75)
     }
+}
+
+@available(iOS 16.0, *)
+#Preview {
+    GaugeExample()
 }

@@ -11,27 +11,27 @@ import SwiftfulRouting
 
 class BreakDownViewModel: RoutableViewModel {
 
-    
-    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse = .preview
-    
+    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse
+
     //MARK: Computed Properties
     var chartModel: SpiderChartDataModel.ViewModel {
         scenarioAttemptResponseModel.sectionSpiderChartViewModel()
     }
-    
+
     var getEvaluationSectionModel: [DetailReportDataModel.SectionEvaluation] {
         scenarioAttemptResponseModel.sections ?? []
     }
-    
+
     var getHeaderTitle: String {
         scenarioAttemptResponseModel.breakDownModuleTitle
     }
-    
+
     var legendsSpiderChartValue: [(String, Double)] {
        Array(zip(chartModel.labels, chartModel.dataSets.first?.values ?? []))
    }
-    
-    init(router: AnyRouter) {
+
+    init(router: AnyRouter, scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse) {
+        self.scenarioAttemptResponseModel = scenarioAttemptResponseModel
         super.init(router: router)
     }
 }

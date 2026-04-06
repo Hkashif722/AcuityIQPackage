@@ -60,6 +60,7 @@ struct SpiderChartViewRepresentable: UIViewRepresentable {
         chart.yAxis.axisMaximum = config.maxValue
         chart.yAxis.labelCount = config.yAxisLabelCount
         chart.yAxis.drawLabelsEnabled = config.showYAxisLabels
+        chart.xAxis.drawLabelsEnabled = config.showXAxisLabels
 //        chart.yAxis.valueFormatter = YAxisValueFormatter()
         
         // Set granularity for proportional spacing
@@ -123,6 +124,7 @@ struct SpiderChartViewRepresentable: UIViewRepresentable {
             return labels[index]
         }
         
+        @MainActor
         func chartView(_ chartView: ChartViewBase, didSelectLegendEntry legend: LegendEntry) {
             guard enableLegendTap,
                   let chart = chartView as? RadarChartView,

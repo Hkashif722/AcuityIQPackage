@@ -13,7 +13,7 @@ public enum SegmentIconType {
 }
 
 
-protocol SegmentItemRepresentable: Identifiable {
+protocol SegmentItemRepresentable: Identifiable, CaseIterable, Hashable where ID == String {
     var menuTitle: String { get }
     var icon: SegmentIconType { get }
     var selectedColor: Color { get }

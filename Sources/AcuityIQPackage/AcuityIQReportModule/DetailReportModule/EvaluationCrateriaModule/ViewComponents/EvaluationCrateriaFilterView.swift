@@ -35,15 +35,11 @@ struct EvaluationCrateriaFilterView: View {
     // MARK: - Search Field
 
     private var searchField: some View {
-        TextField("Search Parameters...", text: $parameter)
-            .onChange(of: parameter) { onSearchTextChange($0) }
-            .minimumScaleFactor(0.7)
-            .font(.caption)
-            .padding(12)
-            .background {
-                Capsule().stroke(.blue, lineWidth: 1)
-            }
-            .clipShape(Capsule())
+        SearchTextField(
+            text: $parameter,
+            placeholder: "Search Parameters...",
+            onChange: onSearchTextChange
+        )
     }
 
     // MARK: - Filter Dropdown

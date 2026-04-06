@@ -11,23 +11,21 @@ import SwiftfulRouting
 
 class KeywordCoverageViewModel: RoutableViewModel {
 
-    
-    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse = .preview
-    
+    let scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse
+
     //MARK: Computed Properties
     var keywordCovergeDataModel: [DetailReportDataModel.KeywordCoverage] {
         scenarioAttemptResponseModel.keywordCoverage ?? []
     }
-    
+
     var keywordCoverageDataModel: String {
         scenarioAttemptResponseModel.keywordCoverageModuleTitle
     }
-    
-    //MARK: Computed Properties
-    init(router: AnyRouter) {
+
+    init(router: AnyRouter, scenarioAttemptResponseModel: DetailReportDataModel.ScenarioAttemptResponse) {
+        self.scenarioAttemptResponseModel = scenarioAttemptResponseModel
         super.init(router: router)
     }
-    
 }
 
 //MARK: Handle Action

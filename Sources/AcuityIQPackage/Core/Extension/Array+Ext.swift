@@ -6,3 +6,15 @@
 //
 
 import Foundation
+
+internal extension Array where Element == GaugeSegment {
+    static func defaultSegments() -> [GaugeSegment] {
+        DetailReportDataModel.ScenarioAttemptResponse.ScoreLevel.allCases.map {
+            GaugeSegment(
+                color: $0.color,
+                title: $0.rawValue,
+                location: $0.location
+            )
+        }
+    }
+}

@@ -1,7 +1,27 @@
-// MARK: - Protocol
-/// Any data point that can be plotted on MetricLineChartView
-/// must conform to this protocol.
-public protocol LineChartDataPoint: Identifiable {
-    var time: Double { get }   // x-axis in seconds
-    var score: Double { get }  // y-axis value
+//
+//  LineChartDataPoint.swift
+//  AcuityIQPackage
+//
+//  Created by Kashif Hussain on 02/04/26.
+//
+
+
+public struct LineChartProtocol {
+    
+    // Base protocol
+    public protocol ChartPlottable: Identifiable {
+        var xValue: Double { get }
+        var yValue: Double { get }
+    }
+    
+    // Metric
+    public protocol LineChartDataPoint: ChartPlottable {
+        var xValue: Double { get }
+        var yValue: Double { get }
+    }
+    
+    // Section
+    public protocol SectionChartDataPoint: LineChartDataPoint {
+        var section: String? { get }
+    }
 }

@@ -5,20 +5,49 @@ import PackageDescription
 
 let package = Package(
     name: "AcuityIQPackage",
+    defaultLocalization: "en",
+    platforms: [
+        .iOS(.v15)
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "AcuityIQPackage",
             targets: ["AcuityIQPackage"]),
     ],
+    dependencies: [
+        .package(
+            url: "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
+            .upToNextMinor(from: "1.0.0")
+        ),
+        .package(
+            path: "/Users/kashifhussain/Documents/SwiftUIUtility/SwiftUIUtility"
+        ),
+        .package(
+            url: "https://github.com/danielgindi/Charts.git",
+            .upToNextMajor(from: "5.1.0")
+        )
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "AcuityIQPackage"),
+            name: "AcuityIQPackage",
+            dependencies: [
+                .product(name: "NetworkService", package: "IOS_APIManager"),
+                .product(name: "SwiftUIUtilities", package: "SwiftUIUtility"),
+                .product(name: "DGCharts", package: "Charts")
+            ],
+            resources: [
+                .process("Resource/Media.xcassets")
+            ]
+        ),
         .testTarget(
             name: "AcuityIQPackageTests",
-            dependencies: ["AcuityIQPackage"]
-        ),
+            dependencies: [
+                "AcuityIQPackage",
+                .product(name: "NetworkService", package: "IOS_APIManager")
+            ]
+        )
     ]
 )

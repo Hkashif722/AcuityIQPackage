@@ -6,8 +6,37 @@
 //
 
 import SwiftUI
+import NetworkService
 
+
+// MARK: Request Model
 struct AllAttemptDataModel {
+    
+    struct GetSecnaioOverallReportRequestModel: EndpointModel {
+        
+        let secnarioID: Int
+        let userID: Int
+
+        var path: String {
+            [
+                APIConst.courseBaseUrl,
+                APIConst.versionAPI,
+                APIConst.GetScenarioOverallReport,
+                String(secnarioID),
+                String(userID)
+            ].joined(separator: "/")
+        }
+
+        var method: NetworkService.HTTPMethod { .get }
+
+        var headers: [String : String]? { nil }
+    }
+    
+    
+}
+
+// MARK: Response Model
+extension AllAttemptDataModel {
     
     
     enum AllDataTab: String, CaseIterable, SegmentItemRepresentable {

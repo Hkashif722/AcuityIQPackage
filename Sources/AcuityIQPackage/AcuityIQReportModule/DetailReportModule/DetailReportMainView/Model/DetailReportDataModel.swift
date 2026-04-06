@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftUIUtilities
+import NetworkService
 
 struct DetailReportDataModel {
     // MARK: - Model
@@ -48,16 +49,56 @@ struct DetailReportDataModel {
 
         var selectedColor: Color { Color.blue.opacity(0.12) }
         var unSelectedColor: Color { Color(.systemGray6) }
+
+        var requiresScenarioData: Bool {
+            switch self {
+            case .overview, .breakdown, .keywordsCoverage, .evaluationCriteria, .behavioralAnalysis:
+                return true
+            case .allAttempts, .leaderboard:
+                return false
+            }
+        }
     }
 }
 
 
+//MARK: Request Model
+extension DetailReportDataModel {
+
+    struct GetScenarioAnalysisRequestModel: EndpointModel {
+        
+        let attemptID: Int
+
+        var path: String {
+            [
+                APIConst.courseBaseUrl,
+                APIConst.versionAPI,
+                APIConst.GetScenarioAnalysis,
+                "\(attemptID)"
+            ].joined(separator: "/")
+        }
+
+        var method: NetworkService.HTTPMethod { .get }
+
+        var headers: [String : String]? { nil }
+    }
+    
+    
+    
+}
+
+
+//MARK: Response Model
 extension  DetailReportDataModel {
     
     // MARK: - Root Response
 
     struct ScenarioAttemptResponse: Codable {
+        let scenarioType: String?
         let scenarioId: Int?
+        let courseId: Int?
+        let moduleId: Int?
+        let moduleAttemptId: Int?
         let userId: Int?
         let attemptNumber: Int?
         let strengths: [String]?
@@ -71,20 +112,110 @@ extension  DetailReportDataModel {
         let sections: [SectionEvaluation]?
         let evaluationCriteria: [EvaluationCriteria]?
         let videoPath: String?
-        let keywordCoverage: [KeywordCoverage]?
         let contentRelevance: String?
         let confidenceScore: Double?
         let whatWentWell: String?
         let improvementsRequired: [String: [String]]?
+        let screenCaptureImages: [String]?
+        let keywordCoverage: [KeywordCoverage]?
 
-//        /// Parses the raw `keywordCoverage` JSON string into typed models.
-//        var decodedKeywordCoverage: [KeywordCoverage] {
-//            guard
-//                let raw = keywordCoverage,
-//                let data = raw.data(using: .utf8)
-//            else { return [] }
-//            return (try? JSONDecoder().decode([KeywordCoverage].self, from: data)) ?? []
-//        }
+        enum CodingKeys: String, CodingKey {
+            case scenarioType, scenarioId, courseId, moduleId, moduleAttemptId
+            case userId, attemptNumber, strengths, improvements, criticals
+            case overallScore, overallAttempts, duration, summary
+            case behaviourGraphs, sections, evaluationCriteria, videoPath
+            case contentRelevance, confidenceScore, whatWentWell
+            case improvementsRequired, screenCaptureImages, keywordCoverage
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            scenarioType = try container.decodeIfPresent(String.self, forKey: .scenarioType)
+            scenarioId = try container.decodeIfPresent(Int.self, forKey: .scenarioId)
+            courseId = try container.decodeIfPresent(Int.self, forKey: .courseId)
+            moduleId = try container.decodeIfPresent(Int.self, forKey: .moduleId)
+            moduleAttemptId = try container.decodeIfPresent(Int.self, forKey: .moduleAttemptId)
+            userId = try container.decodeIfPresent(Int.self, forKey: .userId)
+            attemptNumber = try container.decodeIfPresent(Int.self, forKey: .attemptNumber)
+            strengths = try container.decodeIfPresent([String].self, forKey: .strengths)
+            improvements = try container.decodeIfPresent([String].self, forKey: .improvements)
+            criticals = try container.decodeIfPresent([String].self, forKey: .criticals)
+            overallScore = try container.decodeIfPresent(Double.self, forKey: .overallScore)
+            overallAttempts = try container.decodeIfPresent(Int.self, forKey: .overallAttempts)
+            duration = try container.decodeIfPresent(String.self, forKey: .duration)
+            summary = try container.decodeIfPresent(String.self, forKey: .summary)
+            behaviourGraphs = try container.decodeIfPresent([BehaviourGraph].self, forKey: .behaviourGraphs)
+            sections = try container.decodeIfPresent([SectionEvaluation].self, forKey: .sections)
+            evaluationCriteria = try container.decodeIfPresent([EvaluationCriteria].self, forKey: .evaluationCriteria)
+            videoPath = try container.decodeIfPresent(String.self, forKey: .videoPath)
+            contentRelevance = try container.decodeIfPresent(String.self, forKey: .contentRelevance)
+            confidenceScore = try container.decodeIfPresent(Double.self, forKey: .confidenceScore)
+            whatWentWell = try container.decodeIfPresent(String.self, forKey: .whatWentWell)
+            improvementsRequired = try container.decodeIfPresent([String: [String]].self, forKey: .improvementsRequired)
+            screenCaptureImages = try container.decodeIfPresent([String].self, forKey: .screenCaptureImages)
+
+            // keywordCoverage comes as a JSON-encoded string from the API
+            if let jsonString = try container.decodeIfPresent(String.self, forKey: .keywordCoverage),
+               let data = jsonString.data(using: .utf8) {
+                keywordCoverage = try? JSONDecoder().decode([KeywordCoverage].self, from: data)
+            } else {
+                keywordCoverage = nil
+            }
+        }
+
+        // Memberwise initializer for preview/testing purposes
+        init(
+            scenarioType: String? = nil,
+            scenarioId: Int? = nil,
+            courseId: Int? = nil,
+            moduleId: Int? = nil,
+            moduleAttemptId: Int? = nil,
+            userId: Int? = nil,
+            attemptNumber: Int? = nil,
+            strengths: [String]? = nil,
+            improvements: [String]? = nil,
+            criticals: [String]? = nil,
+            overallScore: Double? = nil,
+            overallAttempts: Int? = nil,
+            duration: String? = nil,
+            summary: String? = nil,
+            behaviourGraphs: [BehaviourGraph]? = nil,
+            sections: [SectionEvaluation]? = nil,
+            evaluationCriteria: [EvaluationCriteria]? = nil,
+            videoPath: String? = nil,
+            keywordCoverage: [KeywordCoverage]? = nil,
+            contentRelevance: String? = nil,
+            confidenceScore: Double? = nil,
+            whatWentWell: String? = nil,
+            improvementsRequired: [String: [String]]? = nil,
+            screenCaptureImages: [String]? = nil
+        ) {
+            self.scenarioType = scenarioType
+            self.scenarioId = scenarioId
+            self.courseId = courseId
+            self.moduleId = moduleId
+            self.moduleAttemptId = moduleAttemptId
+            self.userId = userId
+            self.attemptNumber = attemptNumber
+            self.strengths = strengths
+            self.improvements = improvements
+            self.criticals = criticals
+            self.overallScore = overallScore
+            self.overallAttempts = overallAttempts
+            self.duration = duration
+            self.summary = summary
+            self.behaviourGraphs = behaviourGraphs
+            self.sections = sections
+            self.evaluationCriteria = evaluationCriteria
+            self.videoPath = videoPath
+            self.keywordCoverage = keywordCoverage
+            self.contentRelevance = contentRelevance
+            self.confidenceScore = confidenceScore
+            self.whatWentWell = whatWentWell
+            self.improvementsRequired = improvementsRequired
+            self.screenCaptureImages = screenCaptureImages
+        }
     }
 
     // MARK: - Behaviour Graph

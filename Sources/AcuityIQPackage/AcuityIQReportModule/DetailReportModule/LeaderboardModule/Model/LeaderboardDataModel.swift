@@ -7,8 +7,33 @@
 
 import SwiftUI
 import SwiftUIUtilities
+import NetworkService
 
 struct LeaderboardDataModel {
+    
+    struct GetScenarioLeaderboardRequestModel: EndpointModel {
+        
+        let secnarioID: Int
+
+        var path: String {
+            [
+                APIConst.courseBaseUrl,
+                APIConst.versionAPI,
+                APIConst.GetScenarioLeaderboard,
+                String(secnarioID)
+            ].joined(separator: "/")
+        }
+
+        var method: NetworkService.HTTPMethod { .get }
+
+        var headers: [String : String]? { nil }
+    }
+    
+}
+
+
+// MARK: Response Model
+extension LeaderboardDataModel {
     
     struct LeaderboardAttempt: Codable, Identifiable {
         var id: Int { attemptId }

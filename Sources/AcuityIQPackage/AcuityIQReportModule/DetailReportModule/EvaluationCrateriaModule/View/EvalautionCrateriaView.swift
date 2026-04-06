@@ -12,9 +12,9 @@ struct EvaluationCriteriaView: View {
 
     @StateObject private var vm: EvaluationCretriaViewModel
 
-    init(router: AnyRouter) {
+    init(router: AnyRouter, scenarioResponse: DetailReportDataModel.ScenarioAttemptResponse) {
         _vm = StateObject(
-            wrappedValue: EvaluationCretriaViewModel(router: router)
+            wrappedValue: EvaluationCretriaViewModel(router: router, scenarioAttemptResponseModel: scenarioResponse)
         )
     }
 
@@ -35,6 +35,6 @@ struct EvaluationCriteriaView: View {
 
 #Preview {
     RouterView { router in
-        EvaluationCriteriaView(router: router)
+        EvaluationCriteriaView(router: router, scenarioResponse: .preview)
     }
 }

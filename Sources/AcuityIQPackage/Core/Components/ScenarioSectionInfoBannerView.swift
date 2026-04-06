@@ -14,7 +14,7 @@ struct ScenarioSectionInfoBannerView: View {
     
     var body: some View {
         Text(text)
-            .font(.subheadline)
+            .font(.caption)
             .foregroundColor(Color.blue)
             .padding(.horizontal, 12)
             .padding(.vertical, 10)

@@ -12,8 +12,8 @@ struct OverView: View {
 
     @StateObject private var vm: OverViewModel
 
-    init(router: AnyRouter) {
-        _vm = StateObject(wrappedValue: OverViewModel(router: router))
+    init(router: AnyRouter, scenarioResponse: DetailReportDataModel.ScenarioAttemptResponse) {
+        _vm = StateObject(wrappedValue: OverViewModel(router: router, scenarioAttemptResponseModel: scenarioResponse))
     }
 
     var body: some View {
@@ -41,6 +41,6 @@ struct OverView: View {
 
 #Preview {
     RouterView { router in
-        OverView(router: router)
+        OverView(router: router, scenarioResponse: .preview)
     }
 }

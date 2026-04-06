@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftfulRouting
 
 struct BehaviourAnalysisView: View {
-    
+
     @StateObject private var vm: BehaviourAnalysisViewModel
-    
-    init(router: AnyRouter) {
+
+    init(router: AnyRouter, scenarioResponse: DetailReportDataModel.ScenarioAttemptResponse) {
         _vm = StateObject(
-            wrappedValue: BehaviourAnalysisViewModel(router: router)
+            wrappedValue: BehaviourAnalysisViewModel(router: router, scenarioAttemptResponseModel: scenarioResponse)
         )
     }
 
@@ -50,7 +50,6 @@ struct BehaviourAnalysisView: View {
 
 #Preview {
     RouterView { router in
-        BehaviourAnalysisView(router: router)
+        BehaviourAnalysisView(router: router, scenarioResponse: .preview)
     }
-   
 }

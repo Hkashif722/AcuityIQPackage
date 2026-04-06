@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftfulRouting
 
 struct KeywordCoverageView: View {
-    
+
     @StateObject private var vm: KeywordCoverageViewModel
-    
-    init(router: AnyRouter) {
+
+    init(router: AnyRouter, scenarioResponse: DetailReportDataModel.ScenarioAttemptResponse) {
         _vm = StateObject(
-            wrappedValue: KeywordCoverageViewModel(router: router)
+            wrappedValue: KeywordCoverageViewModel(router: router, scenarioAttemptResponseModel: scenarioResponse)
         )
     }
     
@@ -29,6 +29,6 @@ struct KeywordCoverageView: View {
 
 #Preview {
     RouterView { router in
-        KeywordCoverageView(router: router)
+        KeywordCoverageView(router: router, scenarioResponse: .preview)
     }
 }

@@ -28,7 +28,7 @@ struct SpiderChartLegends: View {
                         Text(items[index].label)
                             .font(.caption)
                             .foregroundStyle(items[index].isVisible ? .primary : .secondary)
-                            .versionedStrikethrough(!items[index].isVisible)
+                            .versionedStrikethroughPkg(!items[index].isVisible)
                     }
                 }
                 .buttonStyle(.plain)
