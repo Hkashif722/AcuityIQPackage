@@ -46,15 +46,20 @@ extension AcuityReportViewModel {
     }
     
     func didTapEvaluationCriteria(_ scenario: AcuityIQReportDataModel.Scenario) {
-        
+        let evaluationParameters = scenario.evaluationParameters ?? []
+        NavigationService.shared.navigate(using: router, to: AppNavigationDestination.evaluationCriteria(evaluationParameters: evaluationParameters))
     }
     
     func didTapKeywords(_ scenario: AcuityIQReportDataModel.Scenario) {
-       
+        let keywords = scenario.keywords ?? []
+        NavigationService.shared.navigate(using: router, to: AppNavigationDestination.keywordsView(keywords: keywords))
     }
     
     func didTapUploadAttempt(_ scenario: AcuityIQReportDataModel.Scenario) {
-       
+        NavigationService.shared.navigate(
+            using: router,
+            to: AppNavigationDestination.reportUploadView(scenarioId: scenario.scenarioId)
+        )
     }
 }
 

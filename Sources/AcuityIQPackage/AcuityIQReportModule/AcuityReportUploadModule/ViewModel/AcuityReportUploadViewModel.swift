@@ -20,16 +20,17 @@ class AcuityReportUploadViewModel: RoutableViewModel {
 
     // MARK: - Properties
 
-    let scenario: AcuityIQReportDataModel.Scenario
+    let scenarioId: Int
+    @Published var scenario: AcuityIQReportDataModel.Scenario?
 
     // MARK: - Computed Properties
 
     var scenarioTitle: String {
-        "Upload New Attempts For: \(scenario.scenarioName ?? "Unknown")"
+        "Upload New Attempts For: \(scenario?.scenarioName ?? "Unknown")"
     }
 
     var scenarioDescription: String {
-        scenario.scenarioDescription ?? ""
+        scenario?.scenarioDescription ?? ""
     }
 
     var hasFileSelected: Bool {
@@ -42,8 +43,8 @@ class AcuityReportUploadViewModel: RoutableViewModel {
 
     // MARK: - Initialization
 
-    init(router: AnyRouter, scenario: AcuityIQReportDataModel.Scenario) {
-        self.scenario = scenario
+    init(router: AnyRouter, scenarioId: Int) {
+        self.scenarioId = scenarioId
         super.init(router: router)
     }
 }
@@ -81,7 +82,7 @@ extension AcuityReportUploadViewModel {
     }
 
     func didTapEvaluationCriteria() {
-        let evaluationParameters = scenario.evaluationParameters ?? []
+        let evaluationParameters = scenario?.evaluationParameters ?? []
         NavigationService.shared.navigate(
             using: router,
             to: AppNavigationDestination.evaluationCriteria(evaluationParameters: evaluationParameters)
@@ -89,7 +90,7 @@ extension AcuityReportUploadViewModel {
     }
 
     func didTapKeywords() {
-        let keywords = scenario.keywords ?? []
+        let keywords = scenario?.keywords ?? []
         NavigationService.shared.navigate(
             using: router,
             to: AppNavigationDestination.keywordsView(keywords: keywords)
@@ -97,9 +98,9 @@ extension AcuityReportUploadViewModel {
     }
 
     func didTapProductKnowledge() {
-        guard let knowledgeDocument = scenario.knowledgeDocument,
+        guard let knowledgeDocument = scenario?.knowledgeDocument,
               !knowledgeDocument.isEmpty else {
-            toast = Toast(type: .info, title: "No Document", message: "Product knowledge document is not available.")
+            toast = Toast(style: .info, message: "Product knowledge document is not available.")
             return
         }
         // TODO: Navigate to document viewer
@@ -107,9 +108,9 @@ extension AcuityReportUploadViewModel {
     }
 
     func didTapReferenceVideo() {
-        guard let referenceVideo = scenario.referenceVideo,
+        guard let referenceVideo = scenario?.referenceVideo,
               !referenceVideo.isEmpty else {
-            toast = Toast(type: .info, title: "No Video", message: "Reference video is not available.")
+            toast = Toast(style: .info, message: "Reference video is not available.")
             return
         }
         // TODO: Navigate to video player

@@ -10,6 +10,7 @@ import SwiftUIUtilities
 import SwiftfulRouting
 import SwiftUI
 
+@MainActor
 class LeaderboardViewModel: RoutableViewModel {
 
     let leaderboardResponseModel: [LeaderboardDataModel.LeaderboardAttempt]
@@ -29,15 +30,25 @@ class LeaderboardViewModel: RoutableViewModel {
 
 //MARK: Handle Action
 extension LeaderboardViewModel {
-    func onAttemptBadgeSelection() {
-        
+    func onAttemptBadgeSelection(_ attempt: LeaderboardDataModel.LeaderboardAttempt) {
+        NavigationService.shared.navigate(
+            using: router,
+            to: AppNavigationDestination.attemptBadgeView(
+                attemptNumber: attempt.attemptNumber ?? 0,
+                totalAttempts: attempt.totalAttempts ?? 0,
+                attemptsUsed: attempt.attemptsUsed ?? 0
+            )
+        )
     }
-    
-    func onHerculeanEffortSelection() {
-        
+
+    func onHerculeanEffortSelection(_ attempt: LeaderboardDataModel.LeaderboardAttempt) {
+        NavigationService.shared.navigate(
+            using: router,
+            to: AppNavigationDestination.herculeanEffortView(strengths: attempt.strengths ?? [])
+        )
     }
-    
+
     func onWatchRecordingPressed(_ attempt: LeaderboardDataModel.LeaderboardAttempt) {
-        
+
     }
 }

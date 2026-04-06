@@ -150,6 +150,71 @@ extension LeaderboardDataModel {
     }
 }
 
+// MARK: - Attempt Stat Item Model
+
+extension LeaderboardDataModel {
+
+    struct AttemptStatItem: Identifiable {
+        let id = UUID()
+        let icon: String
+        let title: String
+        let value: String
+        let valueColor: Color
+
+        init(icon: String, title: String, value: String, valueColor: Color = .primary) {
+            self.icon = icon
+            self.title = title
+            self.value = value
+            self.valueColor = valueColor
+        }
+
+        /// Returns the appropriate color based on remaining attempts count
+        static func remainingAttemptsColor(totalAttempts: Int, attemptsUsed: Int) -> Color {
+            let remaining = totalAttempts - attemptsUsed
+            if remaining <= 0 {
+                return .red
+            } else if remaining <= 2 {
+                return .orange
+            }
+            return .green
+        }
+
+        /// Creates an array of stat items for attempt details
+        static func statItems(
+            attemptNumber: Int,
+            totalAttempts: Int,
+            attemptsUsed: Int
+        ) -> [AttemptStatItem] {
+            [
+                AttemptStatItem(
+                    icon: "number",
+                    title: "Current Attempt",
+                    value: "\(attemptNumber)"
+                ),
+                AttemptStatItem(
+                    icon: "chart.bar.fill",
+                    title: "Total Attempts Allowed",
+                    value: "\(totalAttempts)"
+                ),
+                AttemptStatItem(
+                    icon: "checkmark.circle.fill",
+                    title: "Attempts Used",
+                    value: "\(attemptsUsed)"
+                ),
+                AttemptStatItem(
+                    icon: "clock.fill",
+                    title: "Remaining Attempts",
+                    value: "\(max(0, totalAttempts - attemptsUsed))",
+                    valueColor: remainingAttemptsColor(
+                        totalAttempts: totalAttempts,
+                        attemptsUsed: attemptsUsed
+                    )
+                )
+            ]
+        }
+    }
+}
+
 // MARK: - Computed Helpers
 
 extension LeaderboardDataModel.LeaderboardAttempt {

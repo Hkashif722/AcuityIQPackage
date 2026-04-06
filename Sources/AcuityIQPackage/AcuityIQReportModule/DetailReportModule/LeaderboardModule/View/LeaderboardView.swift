@@ -53,23 +53,23 @@ struct LeaderboardView: View {
 
 
 struct LeaderboardRandCardView: View {
-    
+
     @State private var isExpanded: Bool
-    
+
     let rank: Int
     let leaderboardAttempt: LeaderboardDataModel.LeaderboardAttempt
     let headerGradientStop: [Gradient.Stop] = LeaderboardDataModel.LeaderboardAttempt.leaderBoardHeaderGradientStop
-    
-    let onAttemptBadgeSelection: () -> Void
-    let onHerculeanEffortSelection: () -> Void
+
+    let onAttemptBadgeSelection: (LeaderboardDataModel.LeaderboardAttempt) -> Void
+    let onHerculeanEffortSelection: (LeaderboardDataModel.LeaderboardAttempt) -> Void
     let onWatchRecordingPressed: (LeaderboardDataModel.LeaderboardAttempt) -> Void
-    
+
     init(
         rank: Int,
         leaderboardAttempt: LeaderboardDataModel.LeaderboardAttempt,
         initiallyExpanded: Bool = false,
-        onAttemptBadgeSelection: @escaping () -> Void,
-        onHerculeanEffortSelection: @escaping () -> Void,
+        onAttemptBadgeSelection: @escaping (LeaderboardDataModel.LeaderboardAttempt) -> Void,
+        onHerculeanEffortSelection: @escaping (LeaderboardDataModel.LeaderboardAttempt) -> Void,
         onWatchRecordingPressed: @escaping (LeaderboardDataModel.LeaderboardAttempt) -> Void
     ) {
         self.rank = rank
@@ -100,8 +100,8 @@ struct LeaderboardRandCardView: View {
                         isExpanded.toggle()
                     }
                 },
-                onAttemptBadgeSelection: onAttemptBadgeSelection,
-                onHerculeanEffortSelection: onHerculeanEffortSelection
+                onAttemptBadgeSelection: { onAttemptBadgeSelection(leaderboardAttempt) },
+                onHerculeanEffortSelection: { onHerculeanEffortSelection(leaderboardAttempt) }
             )
             
             if isExpanded {
@@ -111,8 +111,8 @@ struct LeaderboardRandCardView: View {
                     overallScore: leaderboardAttempt.overallScore ?? 0.0,
                     profilePicturePath: leaderboardAttempt.profilePicture,
                     feedbackEntries: leaderboardAttempt.strengths ?? [],
-                    onAttemptBadgeSelection: onAttemptBadgeSelection,
-                    onHerculeanEffortSelection: onHerculeanEffortSelection
+                    onAttemptBadgeSelection: { onAttemptBadgeSelection(leaderboardAttempt) },
+                    onHerculeanEffortSelection: { onHerculeanEffortSelection(leaderboardAttempt) }
                 )
                 .padding(.horizontal)
                 .transition(

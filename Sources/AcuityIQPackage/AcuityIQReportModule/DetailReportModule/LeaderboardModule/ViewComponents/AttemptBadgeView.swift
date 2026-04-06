@@ -15,6 +15,14 @@ struct AttemptBadgeView: View {
     let totalAttempts: Int
     let attemptsUsed: Int
 
+    private var statItems: [LeaderboardDataModel.AttemptStatItem] {
+        LeaderboardDataModel.AttemptStatItem.statItems(
+            attemptNumber: attemptNumber,
+            totalAttempts: totalAttempts,
+            attemptsUsed: attemptsUsed
+        )
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerView
@@ -53,73 +61,32 @@ extension AttemptBadgeView {
     }
 
     private var contentView: some View {
-        VStack(spacing: 16) {
-            attemptStatRow(
-                icon: "number",
-                title: "Current Attempt",
-                value: "\(attemptNumber)"
-            )
-
-            Divider()
-
-            attemptStatRow(
-                icon: "chart.bar.fill",
-                title: "Total Attempts Allowed",
-                value: "\(totalAttempts)"
-            )
-
-            Divider()
-
-            attemptStatRow(
-                icon: "checkmark.circle.fill",
-                title: "Attempts Used",
-                value: "\(attemptsUsed)"
-            )
-
-            Divider()
-
-            attemptStatRow(
-                icon: "clock.fill",
-                title: "Remaining Attempts",
-                value: "\(max(0, totalAttempts - attemptsUsed))",
-                valueColor: remainingAttemptsColor
-            )
+        List(statItems) { item in
+            attemptStatRow(item: item)
+                .listRowSeparator(Visibility.visible)
+                .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
         }
-        .padding()
+        .listStyle(.plain)
+        .applyScrollBounceBehaviorPkg()
     }
 
-    private var remainingAttemptsColor: Color {
-        let remaining = totalAttempts - attemptsUsed
-        if remaining <= 0 {
-            return .red
-        } else if remaining <= 2 {
-            return .orange
-        }
-        return .green
-    }
-
-    private func attemptStatRow(
-        icon: String,
-        title: String,
-        value: String,
-        valueColor: Color = .primary
-    ) -> some View {
+    private func attemptStatRow(item: LeaderboardDataModel.AttemptStatItem) -> some View {
         HStack {
             HStack(spacing: 12) {
-                Image(systemName: icon)
+                Image(systemName: item.icon)
                     .foregroundStyle(Color(hex: "E24B4A"))
                     .frame(width: 24)
 
-                Text(title)
+                Text(item.title)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
-            Text(value)
+            Text(item.value)
                 .font(.title3.bold())
-                .foregroundStyle(valueColor)
+                .foregroundStyle(item.valueColor)
         }
     }
 }

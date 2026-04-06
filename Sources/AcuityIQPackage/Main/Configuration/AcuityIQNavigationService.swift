@@ -60,7 +60,7 @@ public class AcuityIQNavigationService {
         self.onDismissCallback = onDismiss
 
         router.showScreen(.push) { router in
-            AcuityReportUploadView(router: router, scenarioId: scenarioId)
+//            AcuityReportUploadView(router: router, scenarioId: scenarioId)
         }
     }
 

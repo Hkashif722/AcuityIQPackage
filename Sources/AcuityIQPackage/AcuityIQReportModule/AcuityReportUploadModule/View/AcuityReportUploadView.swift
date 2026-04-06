@@ -7,13 +7,14 @@
 
 import SwiftUI
 import SwiftUIUtilities
+import SwiftfulRouting
 
 public struct AcuityReportUploadView: View {
 
     @StateObject private var viewModel: AcuityReportUploadViewModel
 
-    public init(router: AnyRouter, scenario: AcuityIQReportDataModel.Scenario) {
-        _viewModel = StateObject(wrappedValue: AcuityReportUploadViewModel(router: router, scenario: scenario))
+    public init(router: AnyRouter, scenarioId: Int) {
+        _viewModel = StateObject(wrappedValue: AcuityReportUploadViewModel(router: router, scenarioId: scenarioId))
     }
 
     public var body: some View {
@@ -32,7 +33,7 @@ public struct AcuityReportUploadView: View {
                 viewModel.didSelectVideo(url: url)
             }
         }
-        .toastView(toast: $viewModel.toast)
+        .toastViewPkg(toast: $viewModel.toast)
     }
 }
 
@@ -78,7 +79,7 @@ extension AcuityReportUploadView {
     RouterView { router in
         AcuityReportUploadView(
             router: router,
-            scenario: AcuityReportUploadDataModel.previewScenario
+            scenarioId: 120
         )
     }
 }
