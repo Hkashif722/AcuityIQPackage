@@ -30,6 +30,12 @@ struct AcuityReportUploadView: View {
         }
         .loadingOverlayViewPkg(state: viewModel.loadingState)
         .toastViewPkg(toast: $viewModel.toast)
+        .navigationTitle("Attempt left:")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                scenarioAttempBadgeView
+            }
+        }
     }
 }
 
@@ -69,6 +75,23 @@ extension AcuityReportUploadView {
                 onReferenceVideo: viewModel.didTapReferenceVideo
             )
         )
+    }
+    
+    private var scenarioAttempBadgeView: some View {
+        HStack {
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .font(.caption)
+                .foregroundStyle(viewModel.scenarioModel.progressBadgeColor)
+            
+            Text("\(viewModel.attemptRemaining) / \(viewModel.getTotalAttempts)")
+                .font(.caption.bold())
+                .foregroundColor(viewModel.scenarioModel.progressBadgeColor)
+                
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(viewModel.scenarioModel.progressBadgeColor.opacity(0.15))
+        .cornerRadius(12)
     }
 }
 

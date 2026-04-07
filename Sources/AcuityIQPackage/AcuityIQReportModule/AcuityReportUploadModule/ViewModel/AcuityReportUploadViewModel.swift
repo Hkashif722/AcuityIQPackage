@@ -29,6 +29,18 @@ class AcuityReportUploadViewModel: RoutableViewModel {
     var hasFileSelected: Bool {
         selectedFileName != nil
     }
+    
+    var scenarioModel: AcuityIQReportDataModel.Scenario {
+        navModel.scenarioModel
+    }
+    
+    var getTotalAttempts: Int {
+        self.navModel.attempt?.total ?? self.scenarioModel.pendingAttempts ?? 0
+    }
+    
+    var attemptRemaining: Int {
+        self.navModel.attempt?.left ?? self.scenarioModel.pendingAttempts ?? 0
+    }
 
     // MARK: - Initialization
 

@@ -157,6 +157,7 @@ public final class AcuityIQ {
         projectID: Int,
         moduleId: Int? = nil,
         courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)?,
         animated: Bool = true,
         completion: (() -> Void)? = nil
     ) {
@@ -185,7 +186,8 @@ public final class AcuityIQ {
                     isFromModule: true,
                     projectID: projectID,
                     moduleId: moduleId,
-                    courseId: courseId
+                    courseId: courseId,
+                    attempt: attempt
                 )
 
                 self.presentUploadView(
