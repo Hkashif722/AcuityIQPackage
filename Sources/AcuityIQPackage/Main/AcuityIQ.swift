@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 import SwiftfulRouting
 import SwiftUIUtilities
+import NetworkService
 
 // MARK: - AcuityIQ (Main Entry Point)
 
@@ -142,15 +143,20 @@ public final class AcuityIQ {
         }
     }
 
-    /// Present AcuityIQ Report Upload from a UIViewController
+    /// Present AcuityIQ Report Upload from a UIViewController (called from outside the package)
+    /// This method fetches the scenario from the API using the projectID and presents the upload view.
     /// - Parameters:
     ///   - viewController: The view controller to present from
-    ///   - scenarioId: The scenario ID for upload
+    ///   - projectID: The project ID (corresponds to scenarioId) - required
+    ///   - moduleId: Optional module ID
+    ///   - courseId: Optional course ID
     ///   - animated: Whether to animate the presentation (default: true)
     ///   - completion: Optional completion handler called when presentation is complete
     func presentReportUpload(
         from viewController: UIViewController,
-        model: NavigationViewModel.AcuityReportUploadNavModel,
+        projectID: Int,
+        moduleId: Int? = nil,
+        courseId: Int? = nil,
         animated: Bool = true,
         completion: (() -> Void)? = nil
     ) {
@@ -159,6 +165,48 @@ public final class AcuityIQ {
             return
         }
 
+        Task { @MainActor in
+            do {
+                let requestModel = AcuityIQReportDataModel.GetUserScenarioRequestModel()
+                let scenarios = try await ApiService.shared.requestGetHeader(
+                    type: [AcuityIQReportDataModel.Scenario].self,
+                    model: requestModel
+                )
+
+                // Filter scenario by projectID (corresponds to scenarioId)
+                guard let matchedScenario = scenarios.first(where: { $0.scenarioId == projectID }) else {
+                    Logger.shared.log(.error, message: "No scenario found for projectID: \(projectID)")
+                    return
+                }
+
+                // Create navigation model with the fetched scenario
+                let navModel = NavigationViewModel.AcuityReportUploadNavModel(
+                    scenarioModel: matchedScenario,
+                    isFromModule: true,
+                    projectID: projectID,
+                    moduleId: moduleId,
+                    courseId: courseId
+                )
+
+                self.presentUploadView(
+                    from: viewController,
+                    model: navModel,
+                    animated: animated,
+                    completion: completion
+                )
+            } catch {
+                Logger.shared.log(.error, message: "Error fetching scenarios: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    /// Internal method to present the upload view
+    private func presentUploadView(
+        from viewController: UIViewController,
+        model: NavigationViewModel.AcuityReportUploadNavModel,
+        animated: Bool,
+        completion: (() -> Void)?
+    ) {
         let hasNavigationController = viewController.navigationController != nil
 
         let wrapperView = AcuityReportUploadContainerView(

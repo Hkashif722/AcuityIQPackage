@@ -61,10 +61,7 @@ extension AcuityReportViewModel {
             to: AppNavigationDestination
                 .reportUploadView(
                     navModel: .init(
-                        scenarioModel: scenario,
-                        moduleId: nil,
-                        courseId: nil,
-                        moduleAttemptId: nil
+                        scenarioModel: scenario
                     )
                 )
         )

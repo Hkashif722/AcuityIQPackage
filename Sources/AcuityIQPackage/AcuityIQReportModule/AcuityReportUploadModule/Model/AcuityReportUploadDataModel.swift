@@ -659,6 +659,34 @@ extension AcuityReportUploadDataModel {
     }
 }
 
+// MARK: - Mark Module Attempt
+extension AcuityReportUploadDataModel {
+
+    struct MarkModuleAttemptRequestModel: EndpointModel {
+
+        struct Payload: Codable {
+            let projectId: Int
+            let courseId: Int
+            let moduleId: Int
+            let isNewAttempt: Bool
+        }
+
+        let payload: Payload
+
+        var path: String {
+            [
+                APIConst.courseBaseUrl,
+                APIConst.versionAPI,
+                APIConst.MarkModuleAttempt
+            ].joined(separator: "/")
+        }
+
+        var method: NetworkService.HTTPMethod { .post }
+
+        var headers: [String : String]? { nil }
+    }
+}
+
 // MARK: - Preview Data
 
 #if DEBUG

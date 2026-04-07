@@ -21,12 +21,14 @@ public protocol AcuityIQPresentable: AnyObject {
     ///   - completion: Optional completion handler
     func presentAcuityReportList(animated: Bool, completion: (() -> Void)?)
 
-    /// Present AcuityIQ Report Upload View
+    /// Present AcuityIQ Report Upload View (from module)
     /// - Parameters:
-    ///   - scenarioId: The scenario ID for upload
+    ///   - projectID: The project ID (corresponds to scenarioId) - required
+    ///   - moduleId: Optional module ID
+    ///   - courseId: Optional course ID
     ///   - animated: Whether to animate the presentation
     ///   - completion: Optional completion handler
-//    func presentAcuityReportUpload(model: NavigationViewModel.AcuityReportUploadNavModel, animated: Bool, completion: (() -> Void)?)
+    func presentAcuityReportUpload(projectID: Int, moduleId: Int?, courseId: Int?, animated: Bool, completion: (() -> Void)?)
 }
 
 // MARK: - UIViewController + AcuityIQPresentable
@@ -44,14 +46,24 @@ extension UIViewController: AcuityIQPresentable {
         AcuityIQ.shared.presentReportList(from: self, animated: animated, completion: completion)
     }
 
-    /// Present AcuityIQ Report Upload View
+    /// Present AcuityIQ Report Upload View (from module)
+    /// This method fetches the scenario from the API using the projectID and presents the upload view.
     /// - If embedded in UINavigationController, pushes the view
     /// - Otherwise, presents modally in full screen
     /// - Parameters:
-    ///   - scenarioId: The scenario ID for upload
+    ///   - projectID: The project ID (corresponds to scenarioId) - required
+    ///   - moduleId: Optional module ID (default: nil)
+    ///   - courseId: Optional course ID (default: nil)
     ///   - animated: Whether to animate the presentation (default: true)
     ///   - completion: Optional completion handler called after presentation
-//    public func presentAcuityReportUpload(model: NavigationViewModel.AcuityReportUploadNavModel, animated: Bool = true, completion: (() -> Void)? = nil) {
-//        AcuityIQ.shared.presentReportUpload(from: self, model: model, animated: animated, completion: completion)
-//    }
+    public func presentAcuityReportUpload(projectID: Int, moduleId: Int? = nil, courseId: Int? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
+        AcuityIQ.shared.presentReportUpload(
+            from: self,
+            projectID: projectID,
+            moduleId: moduleId,
+            courseId: courseId,
+            animated: animated,
+            completion: completion
+        )
+    }
 }

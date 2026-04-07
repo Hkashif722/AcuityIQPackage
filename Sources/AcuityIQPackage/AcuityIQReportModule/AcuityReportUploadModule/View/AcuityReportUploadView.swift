@@ -78,9 +78,10 @@ extension AcuityReportUploadView {
             router: router,
             navModel: NavigationViewModel.AcuityReportUploadNavModel(
                 scenarioModel: AcuityIQReportDataModel.Scenario.preview,
+                isFromModule: true,
+                projectID: 120,
                 moduleId: nil,
-                courseId: nil,
-                moduleAttemptId: nil
+                courseId: nil
             )
         )
     }

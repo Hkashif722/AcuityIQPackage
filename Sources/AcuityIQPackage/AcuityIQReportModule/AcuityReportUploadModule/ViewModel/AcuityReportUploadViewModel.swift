@@ -58,7 +58,9 @@ extension AcuityReportUploadViewModel {
                 return
             }
             
-            self.postOJTFile(fileURL: url)
+            Task {
+                self.postVideoFile(fileURL: url)
+            }
         }
         NavigationService.shared.navigate(using: router, to: .showVideoPickerView(navModel))
     }
@@ -108,12 +110,55 @@ extension AcuityReportUploadViewModel {
 
 // MARK: API Call
 extension AcuityReportUploadViewModel {
+    
+    // MARK: Mark Module Attempt
+    @discardableResult
+    private func callMarkModuleAttempt() async -> Int? {
+        guard let projectID = navModel.projectID,
+              let courseId = navModel.courseId,
+              let moduleId = navModel.moduleId else {
+            Logger.shared.log(.error, message: "Missing required parameters for MarkModuleAttempt")
+            return nil
+        }
+
+        let payload = AcuityReportUploadDataModel.MarkModuleAttemptRequestModel.Payload(
+            projectId: projectID,
+            courseId: courseId,
+            moduleId: moduleId,
+            isNewAttempt: true
+        )
+
+        let model = AcuityReportUploadDataModel.MarkModuleAttemptRequestModel(payload: payload)
+
+        self.loadingState = .loading(title: "Initializing", message: "Please wait.")
+
+        do {
+            let response = try await ApiService.shared.requestPostHeader(
+                type: Int.self,
+                model: model,
+                payload: payload
+            )
+
+            Logger.shared.log(.debug, message: "MarkModuleAttempt response: \(response)")
+            return response
+
+        } catch {
+            self.loadingState = .none
+            Logger.shared.log(.error, message: "Error occurred, api: \(model.path), error: \(error.localizedDescription), ref: \(self)")
+            self.toast = Toast(style: .error, message: "Failed to initialize module attempt")
+            return nil
+        }
+    }
+    
+    
     //Post file upload:
-    private func postOJTFile(fileURL: URL) {
+    private func postVideoFile(fileURL: URL) {
         
         let uploadGoalTask = Task { [weak self] in
             
             guard let self = self else { return }
+            
+            await self.callMarkModuleAttempt()
             
             self.loadingState = .loading(title: "uploading", message: "Please wait.")
             
@@ -347,38 +392,43 @@ extension AcuityReportUploadViewModel {
         videoPath: String,
         speechInsightsResponse: AcuityReportUploadDataModel.SpeechInsightsResponse
     ) {
-        guard let scenarioResponse = self.scenarioAnalysisResponse,
-              let speechAnalysisResponse = self.speechAnalysisResponse else {
-            self.loadingState = .loaded
-            return
-        }
-
-        self.loadingState = .loading(title: "Saving Analysis Report", message: "Please wait.")
-
-        let model = AcuityReportUploadDataModel.PostAnalysisRequestModel(
-            scenarioResponse: scenarioResponse,
-            speechAnalysisResponse: speechAnalysisResponse,
-            speechInsightsResponse: speechInsightsResponse,
-            videoPath: videoPath,
-            scenarioId: navModel.scenarioModel.scenarioId ?? 0,
-            moduleId: navModel.moduleId,
-            courseId: navModel.courseId,
-            moduleAttemptId: navModel.moduleAttemptId
-        )
-
+        
         Task { [weak self] in
             guard let self else { return }
+            
+            let moduleAttemptId: Int?
+            moduleAttemptId = self.navModel.isFromModule ? await callMarkModuleAttempt() : nil
+            
+            guard let scenarioResponse = self.scenarioAnalysisResponse,
+                  let speechAnalysisResponse = self.speechAnalysisResponse else {
+                self.loadingState = .loaded
+                return
+            }
+            
+            self.loadingState = .loading(title: "Saving Analysis Report", message: "Please wait.")
+            
+            let model = AcuityReportUploadDataModel.PostAnalysisRequestModel(
+                scenarioResponse: scenarioResponse,
+                speechAnalysisResponse: speechAnalysisResponse,
+                speechInsightsResponse: speechInsightsResponse,
+                videoPath: videoPath,
+                scenarioId: navModel.scenarioModel.scenarioId,
+                moduleId: navModel.moduleId,
+                courseId: navModel.courseId,
+                moduleAttemptId: moduleAttemptId
+            )
+            
             do {
                 let response = try await ApiService.shared.requestPostHeader(
                     type: AcuityReportUploadDataModel.PostAnalysisResponse.self,
                     model: model,
                     payload: model.payload
                 )
-
+                
                 Logger.shared.log(.debug, message: "\(response.self)")
                 self.loadingState = .loaded
                 self.toast = Toast(style: .success, message: response.message ?? "Analysis saved successfully")
-
+                
             } catch {
                 self.loadingState = .none
                 Logger.shared.log(.error, message: "Error occured, api: \(model.path),\nerror: \(error.localizedDescription)\nref:\(self)")

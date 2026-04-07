@@ -33,5 +33,6 @@ internal struct APIConst {
     static let speechInsights = "speech_insights"
     static let Post_Usage = "c/AIData/PostUsage"
     static let PostAnalysis = "c/AIScenario/PostAnalysis"
+    static let MarkModuleAttempt = "MyCourses/MarkModuleAttempt"
 
 }
