@@ -9,13 +9,9 @@ import SwiftUI
 
 struct VideoUploadSectionView: View {
 
-    let selectedFileURL: URL?
+    let selectedFileName: String?
     let onBrowseFiles: () -> Void
     let onAnalyse: () -> Void
-
-    private var hasFileSelected: Bool {
-        selectedFileURL != nil
-    }
 
     var body: some View {
         ZStack {
@@ -87,12 +83,12 @@ extension VideoUploadSectionView {
 
     private var fileStatusView: some View {
         VStack(spacing: 4) {
-            if let file = selectedFileURL {
+            if let file = selectedFileName {
                 Text("File uploaded")
                     .font(.caption)
                     .foregroundStyle(.green)
 
-                Text(file.lastPathComponent)
+                Text(file)
                     .font(.caption)
                     .fontWeight(.medium)
                     .lineLimit(1)
@@ -103,7 +99,7 @@ extension VideoUploadSectionView {
             }
         }
         .frame(height: 35)
-        .animation(.easeInOut, value: selectedFileURL)
+        .animation(.easeInOut, value: selectedFileName)
     }
 
     private var analyseButton: some View {
@@ -122,21 +118,21 @@ extension VideoUploadSectionView {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 25))
         }
-        .disabled(!hasFileSelected)
-        .opacity(hasFileSelected ? 1 : 0.5)
+        .disabled(selectedFileName != nil)
+        .opacity(selectedFileName == nil ? 1 : 0.5)
     }
 }
 
 #Preview {
     VStack(spacing: 20) {
         VideoUploadSectionView(
-            selectedFileURL: nil,
+            selectedFileName: "file",
             onBrowseFiles: {},
             onAnalyse: {}
         )
 
         VideoUploadSectionView(
-            selectedFileURL: URL(string: "file:///video.mp4"),
+            selectedFileName: "file",
             onBrowseFiles: {},
             onAnalyse: {}
         )

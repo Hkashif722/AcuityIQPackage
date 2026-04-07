@@ -26,6 +26,7 @@ struct DetailReportView: View {
                 onSegmentSelect: vm.onSegmentSelect(_:)
             )
             .frame(height: 50)
+            .padding(.top, 10)
             
             segmentView
             

@@ -1,5 +1,5 @@
 {
-  "originHash" : "d8a045b7be9a6690002534f5bfe403af31bee0f90ba08ebc1f1dfda769c46350",
+  "originHash" : "3da970b0463f7657bffef81f5985f71a8d49908e17f6ce1a602fe5dd63dc5e44",
   "pins" : [
     {
       "identity" : "charts",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "bf0a8b4628b0e24d60f090b382c15b96329ab92c",
         "version" : "5.3.6"
+      }
+    },
+    {
+      "identity" : "swiftuiutility",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Hkashif722/SwiftUIUtility",
+      "state" : {
+        "branch" : "update",
+        "revision" : "92d9722852f0389d1787fca909fa86cf136ca7fe"
       }
     }
   ],

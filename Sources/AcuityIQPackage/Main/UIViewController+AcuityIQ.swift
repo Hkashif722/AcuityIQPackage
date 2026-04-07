@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUIUtilities
 
 // MARK: - AcuityIQPresentable Protocol
 
@@ -25,7 +26,7 @@ public protocol AcuityIQPresentable: AnyObject {
     ///   - scenarioId: The scenario ID for upload
     ///   - animated: Whether to animate the presentation
     ///   - completion: Optional completion handler
-    func presentAcuityReportUpload(scenarioId: Int, animated: Bool, completion: (() -> Void)?)
+//    func presentAcuityReportUpload(model: NavigationViewModel.AcuityReportUploadNavModel, animated: Bool, completion: (() -> Void)?)
 }
 
 // MARK: - UIViewController + AcuityIQPresentable
@@ -50,7 +51,7 @@ extension UIViewController: AcuityIQPresentable {
     ///   - scenarioId: The scenario ID for upload
     ///   - animated: Whether to animate the presentation (default: true)
     ///   - completion: Optional completion handler called after presentation
-    public func presentAcuityReportUpload(scenarioId: Int, animated: Bool = true, completion: (() -> Void)? = nil) {
-        AcuityIQ.shared.presentReportUpload(from: self, scenarioId: scenarioId, animated: animated, completion: completion)
-    }
+//    public func presentAcuityReportUpload(model: NavigationViewModel.AcuityReportUploadNavModel, animated: Bool = true, completion: (() -> Void)? = nil) {
+//        AcuityIQ.shared.presentReportUpload(from: self, model: model, animated: animated, completion: completion)
+//    }
 }

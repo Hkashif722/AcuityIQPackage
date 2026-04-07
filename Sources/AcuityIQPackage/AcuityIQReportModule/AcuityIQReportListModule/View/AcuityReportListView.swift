@@ -21,7 +21,7 @@ public struct AcuityReportListView: View {
     public var body: some View {
         VStack {
             SearchTextField(text: $vm.searchText, placeholder: "Search scenarios...")
-                .padding(.horizontal, 10)
+                .padding(10)
             reportListView
         }
         .loadingOverlayViewPkg(state: vm.loadingState)

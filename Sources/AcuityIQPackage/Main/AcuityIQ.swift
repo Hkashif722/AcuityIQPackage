@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import SwiftfulRouting
+import SwiftUIUtilities
 
 // MARK: - AcuityIQ (Main Entry Point)
 
@@ -130,6 +131,7 @@ public final class AcuityIQ {
         let hostingController = AcuityHostingController(rootView: wrapperView)
         hostingController.hidesBottomBarWhenPushed = true
         hostingController.shouldHideNavigationBar = hasNavigationController
+        hostingController.view.tintColor = .label
 
         if let navigationController = viewController.navigationController {
             navigationController.pushViewController(hostingController, animated: animated)
@@ -146,9 +148,9 @@ public final class AcuityIQ {
     ///   - scenarioId: The scenario ID for upload
     ///   - animated: Whether to animate the presentation (default: true)
     ///   - completion: Optional completion handler called when presentation is complete
-    public func presentReportUpload(
+    func presentReportUpload(
         from viewController: UIViewController,
-        scenarioId: Int,
+        model: NavigationViewModel.AcuityReportUploadNavModel,
         animated: Bool = true,
         completion: (() -> Void)? = nil
     ) {
@@ -160,7 +162,7 @@ public final class AcuityIQ {
         let hasNavigationController = viewController.navigationController != nil
 
         let wrapperView = AcuityReportUploadContainerView(
-            scenarioId: scenarioId,
+            navModel: model,
             onDismiss: { [weak viewController] in
                 if let nav = viewController?.navigationController {
                     nav.popViewController(animated: animated)
@@ -258,20 +260,23 @@ private struct AcuityReportListContainerView: View {
 }
 
 private struct AcuityReportUploadContainerView: View {
-    let scenarioId: Int
+    let navModel: NavigationViewModel.AcuityReportUploadNavModel
     let onDismiss: () -> Void
 
     var body: some View {
         RouterView { router in
-            AcuityReportUploadView(router: router, scenarioId: scenarioId)
-                .navigationTitle("Upload Report")
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        BackButton(action: onDismiss)
-                    }
+            AcuityReportUploadView(
+                router: router,
+                navModel: navModel
+            )
+            .navigationTitle("Upload Report")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    BackButton(action: onDismiss)
                 }
+            }
         }
     }
 }

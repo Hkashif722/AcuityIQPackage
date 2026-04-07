@@ -21,7 +21,7 @@ struct AcuityAttemptListView: View {
     var body: some View {
         VStack(spacing: 0) {
             SearchTextField(text: $vm.searchText, placeholder: "Search attempts...")
-                .padding(.horizontal, 10)
+                .padding(10)
             
             attemptListView
         }

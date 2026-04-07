@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftUIUtilities
 import SwiftfulRouting
 
-public struct AcuityReportUploadView: View {
+struct AcuityReportUploadView: View {
 
     @StateObject private var viewModel: AcuityReportUploadViewModel
 
-    public init(router: AnyRouter, scenarioId: Int) {
-        _viewModel = StateObject(wrappedValue: AcuityReportUploadViewModel(router: router, scenarioId: scenarioId))
+    init(router: AnyRouter, navModel: NavigationViewModel.AcuityReportUploadNavModel) {
+        _viewModel = StateObject(wrappedValue: AcuityReportUploadViewModel(router: router, navModel: navModel))
     }
 
     public var body: some View {
@@ -28,11 +28,7 @@ public struct AcuityReportUploadView: View {
             }
             .padding()
         }
-        .sheet(isPresented: $viewModel.showVideoPicker) {
-            VideoPicker { url in
-                viewModel.didSelectVideo(url: url)
-            }
-        }
+        .loadingOverlayViewPkg(state: viewModel.loadingState)
         .toastViewPkg(toast: $viewModel.toast)
     }
 }
@@ -43,8 +39,8 @@ extension AcuityReportUploadView {
 
     private var topCardView: some View {
         UploadTopCardView(
-            title: viewModel.scenarioTitle,
-            description: viewModel.scenarioDescription
+            title: viewModel.navModel.scenarioModel.scenarioName ?? "",
+            description: viewModel.navModel.scenarioModel.scenarioDescription ?? ""
         )
     }
 
@@ -59,7 +55,7 @@ extension AcuityReportUploadView {
 
     private var videoUploadSection: some View {
         VideoUploadSectionView(
-            selectedFileURL: viewModel.selectedFileURL,
+            selectedFileName: viewModel.selectedFileName,
             onBrowseFiles: viewModel.didTapBrowseFiles,
             onAnalyse: viewModel.didTapAnalyse
         )
@@ -68,6 +64,7 @@ extension AcuityReportUploadView {
     private var previewSection: some View {
         UploadPreviewSectionView(
             items: AcuityReportUploadDataModel.previewItems(
+                refVideo: viewModel.navModel.scenarioModel.referenceVideo,
                 onProductKnowledge: viewModel.didTapProductKnowledge,
                 onReferenceVideo: viewModel.didTapReferenceVideo
             )
@@ -79,7 +76,12 @@ extension AcuityReportUploadView {
     RouterView { router in
         AcuityReportUploadView(
             router: router,
-            scenarioId: 120
+            navModel: NavigationViewModel.AcuityReportUploadNavModel(
+                scenarioModel: AcuityIQReportDataModel.Scenario.preview,
+                moduleId: nil,
+                courseId: nil,
+                moduleAttemptId: nil
+            )
         )
     }
 }

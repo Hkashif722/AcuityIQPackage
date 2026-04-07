@@ -50,17 +50,17 @@ extension AcuityIQReportDataModel {
         let usageType: String?
         let customUsageType: String?
         let usageDescription: String?
-        
+
         var id: Int { scenarioId }
         
         // MARK: - Nested Models
-        
+
         struct EvaluationParameter: Codable {
             let name: String?
             let description: String?
             let weightage: String?
         }
-        
+
         struct Attempt: Codable, Identifiable {
             let attemptId: Int
             let attemptNumber: Int?
@@ -68,7 +68,7 @@ extension AcuityIQReportDataModel {
             let userName: String?
             let score: Double?
             let attemptDate: String?
-            
+
             var id: Int { attemptId }
         }
         
