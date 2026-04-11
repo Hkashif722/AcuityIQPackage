@@ -22,6 +22,7 @@ struct OverView: View {
                 OverViewStatItemGridView(statModels: vm.scenarioAttemptResponseModel.statCards)
 
                 VideoScoreView(
+                    videoPathURL: vm.scenarioAttemptResponseModel.fullVideoPathURL,
                     overAllScoreModel: vm.scenarioAttemptResponseModel.overallScoreModel
                 )
 

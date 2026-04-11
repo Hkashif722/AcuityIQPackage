@@ -11,11 +11,14 @@ struct VideoScoreView: View {
     
     typealias OverallScoreModel = DetailReportDataModel.ScenarioAttemptResponse.OverallScoreModel
     
+    let videoPathURL: URL?
     let overAllScoreModel: OverallScoreModel
     
     var body: some View {
         HStack(spacing: 8) {
-            StatVideoView()
+            if let videoPathURL {
+                StatVideoView(videoPathURL: videoPathURL)
+            }
             scoreView
         }
         .frame(height: 220)
@@ -31,7 +34,9 @@ struct VideoScoreView: View {
 
 #Preview {
     VideoScoreView(
-        overAllScoreModel: DetailReportDataModel.ScenarioAttemptResponse.preview.overallScoreModel
+        videoPathURL: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"),
+        overAllScoreModel:
+            DetailReportDataModel.ScenarioAttemptResponse.preview.overallScoreModel
     )
     .padding(.horizontal, 10)
         

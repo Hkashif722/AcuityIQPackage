@@ -45,11 +45,13 @@ struct LeaderboardView: View {
     
 }
 
+#if Debug
 #Preview {
     RouterView { router in
         LeaderboardView(router: router, leaderboardResponse: LeaderboardDataModel.LeaderboardAttempt.previewArray)
     }
 }
+#endif
 
 
 struct LeaderboardRandCardView: View {

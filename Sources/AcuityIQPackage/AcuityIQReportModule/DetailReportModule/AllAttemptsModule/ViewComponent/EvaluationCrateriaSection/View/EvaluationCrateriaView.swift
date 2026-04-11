@@ -34,7 +34,7 @@ struct EvaluationCrateriaView: View {
     
 }
 
-
+#if Debug
 #Preview {
     ScrollView {
         EvaluationCrateriaView(
@@ -45,3 +45,4 @@ struct EvaluationCrateriaView: View {
     .versionedContentMarginsPkg()
     
 }
+#endif

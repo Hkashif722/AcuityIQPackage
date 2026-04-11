@@ -56,6 +56,17 @@ extension LeaderboardDataModel {
         let videoPath: String?
         let keywordCoverage: [KeywordCoverage]?
         
+        
+        // Computed Properties
+        
+        var profileFullPathURL: URL? {
+            ResourceUtils.getResourceURLPath(self.profilePicture)
+        }
+        
+        var fullVideoPath: String {
+            ResourceUtils.getResourcPath(self.videoPath)
+        }
+        
         struct BehaviourGraph: Codable, Identifiable {
             var id: String { name ?? UUID().uuidString }
             let name: String?

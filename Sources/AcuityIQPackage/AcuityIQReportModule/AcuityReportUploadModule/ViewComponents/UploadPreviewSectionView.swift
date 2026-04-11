@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UploadPreviewSectionView: View {
 
+    let attemptExausted: Bool
     let items: [AcuityReportUploadDataModel.PreviewItem]
 
     var body: some View {
@@ -33,11 +34,13 @@ struct UploadPreviewSectionView: View {
             .background(Color(.systemGray5))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
+        .disabled(attemptExausted)
     }
 }
 
 #Preview {
     UploadPreviewSectionView(
+        attemptExausted: false,
         items: AcuityReportUploadDataModel.previewItems(
             refVideo: nil,
             onProductKnowledge: { print("Product Knowledge") },

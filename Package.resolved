@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
       "state" : {
-        "revision" : "d689b859e1f556c3882be5882afc4ee4e094356d",
-        "version" : "1.0.2"
+        "revision" : "3de2b013c10468bdf32f6ee0b481bcf3523cb27b",
+        "version" : "1.0.5"
       }
     },
     {

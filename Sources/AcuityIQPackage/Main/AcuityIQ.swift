@@ -225,6 +225,7 @@ public final class AcuityIQ {
         let hostingController = AcuityHostingController(rootView: wrapperView)
         hostingController.hidesBottomBarWhenPushed = true
         hostingController.shouldHideNavigationBar = hasNavigationController
+        hostingController.view.tintColor = .label
 
         if let navigationController = viewController.navigationController {
             navigationController.pushViewController(hostingController, animated: animated)

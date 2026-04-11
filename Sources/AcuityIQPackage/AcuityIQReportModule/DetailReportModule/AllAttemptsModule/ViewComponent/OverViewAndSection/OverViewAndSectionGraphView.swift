@@ -60,6 +60,7 @@ struct OverViewAndSectionGraphView: View {
     }
 }
 
+#if Debug
 @available(iOS 16.0, *)
 #Preview {
     let model =  AllAttemptDataModel.AllAttemptResponse.preview
@@ -72,3 +73,4 @@ struct OverViewAndSectionGraphView: View {
     }
     .versionedContentMarginsPkg()
 }
+#endif

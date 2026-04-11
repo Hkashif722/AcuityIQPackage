@@ -72,8 +72,10 @@ struct AllAttemptsView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     RouterView { router in
         AllAttemptsView(router: router, allAttemptResponse: .preview)
     }
 }
+#endif

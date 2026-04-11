@@ -77,7 +77,7 @@ struct DetailReportView: View {
             }
         case .leaderboard:
             if let leaderboardResponse = vm.leaderboardResponse {
-                LeaderboardView(router: vm.router, leaderboardResponse: leaderboardResponse)
+                NLBView(router: vm.router, leaderboardResponse: leaderboardResponse)
             } else {
                 EmptyStateView(emptyState: vm.emptyState)
             }

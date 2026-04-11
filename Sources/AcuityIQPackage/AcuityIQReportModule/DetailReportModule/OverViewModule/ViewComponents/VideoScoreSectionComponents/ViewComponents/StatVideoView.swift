@@ -9,11 +9,11 @@ import SwiftUI
 import SwiftUIUtilities
 
 struct StatVideoView: View {
-    let url = URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8")!
+    let videoPathURL: URL
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             headerView
-            UIKitComponentRepresentable.PlayerKitView(videoURL: url)
+            UIKitComponentRepresentable.PlayerKitView(videoURL: videoPathURL)
                 .cornerRadiusPkg(10, corners: .allCorners)
         }
         .frame(maxWidth: .infinity)
@@ -36,5 +36,5 @@ struct StatVideoView: View {
 }
 
 #Preview {
-    StatVideoView()
+    StatVideoView(videoPathURL: URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8")! )
 }

@@ -61,6 +61,7 @@ extension AcuityReportUploadView {
 
     private var videoUploadSection: some View {
         VideoUploadSectionView(
+            attemptExausted: viewModel.isAttemptExausted,
             selectedFileName: viewModel.selectedFileName,
             onBrowseFiles: viewModel.didTapBrowseFiles,
             onAnalyse: viewModel.didTapAnalyse
@@ -69,6 +70,7 @@ extension AcuityReportUploadView {
 
     private var previewSection: some View {
         UploadPreviewSectionView(
+            attemptExausted: viewModel.isAttemptExausted,
             items: AcuityReportUploadDataModel.previewItems(
                 refVideo: viewModel.navModel.scenarioModel.referenceVideo,
                 onProductKnowledge: viewModel.didTapProductKnowledge,
@@ -83,7 +85,7 @@ extension AcuityReportUploadView {
                 .font(.caption)
                 .foregroundStyle(viewModel.scenarioModel.progressBadgeColor)
             
-            Text("\(viewModel.attemptRemaining) / \(viewModel.getTotalAttempts)")
+            Text("\(viewModel.attemptRemaining) / \(viewModel.totalAttempts)")
                 .font(.caption.bold())
                 .foregroundColor(viewModel.scenarioModel.progressBadgeColor)
                 

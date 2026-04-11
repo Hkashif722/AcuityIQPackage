@@ -118,6 +118,12 @@ extension  DetailReportDataModel {
         let improvementsRequired: [String: [String]]?
         let screenCaptureImages: [String]?
         let keywordCoverage: [KeywordCoverage]?
+        
+        
+        //MARK: Computed properties
+        var fullVideoPathURL: URL? {
+            ResourceUtils.getResourceURLPath(videoPath)
+        }
 
         enum CodingKeys: String, CodingKey {
             case scenarioType, scenarioId, courseId, moduleId, moduleAttemptId

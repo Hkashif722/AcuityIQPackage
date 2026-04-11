@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct VideoUploadSectionView: View {
-
+    
+    let attemptExausted: Bool
     let selectedFileName: String?
     let onBrowseFiles: () -> Void
     let onAnalyse: () -> Void
@@ -79,6 +80,7 @@ extension VideoUploadSectionView {
                 .background(Color.blue.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
+        .disabled(attemptExausted)
     }
 
     private var fileStatusView: some View {
@@ -118,20 +120,22 @@ extension VideoUploadSectionView {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 25))
         }
-        .disabled(selectedFileName != nil)
-        .opacity(selectedFileName == nil ? 1 : 0.5)
+        .disabled(!(selectedFileName != nil))
+        .opacity(selectedFileName != nil ? 1 : 0.5)
     }
 }
 
 #Preview {
     VStack(spacing: 20) {
         VideoUploadSectionView(
+            attemptExausted: true,
             selectedFileName: "file",
             onBrowseFiles: {},
             onAnalyse: {}
         )
 
         VideoUploadSectionView(
+            attemptExausted: false,
             selectedFileName: "file",
             onBrowseFiles: {},
             onAnalyse: {}

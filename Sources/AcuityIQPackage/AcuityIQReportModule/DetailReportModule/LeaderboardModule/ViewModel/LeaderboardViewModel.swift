@@ -49,6 +49,7 @@ extension LeaderboardViewModel {
     }
 
     func onWatchRecordingPressed(_ attempt: LeaderboardDataModel.LeaderboardAttempt) {
-
+        let navModel = NavigationViewModel.ResourceViewModel(filePath: attempt.fullVideoPath, isOnlineType: true)
+        NavigationService.shared.navigate(using: router, to: .resourceView(navModel))
     }
 }

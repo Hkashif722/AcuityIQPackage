@@ -58,6 +58,7 @@ struct SectionContentView: View {
 
 }
 
+#if Debug
 #Preview {
     ScrollView {
         SectionContentView(evaluationData: AllAttemptDataModel.AllAttemptResponse.preview.behavioural[1])
@@ -65,3 +66,4 @@ struct SectionContentView: View {
     }
     .versionedContentMarginsPkg()
 }
+#endif

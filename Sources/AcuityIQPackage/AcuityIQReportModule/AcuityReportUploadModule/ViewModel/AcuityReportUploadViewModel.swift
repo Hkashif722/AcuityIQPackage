@@ -16,6 +16,10 @@ class AcuityReportUploadViewModel: RoutableViewModel {
     // MARK: - Published Properties
 
     @Published var selectedFileName: String?
+    
+    @Published var totalAttempts: Int
+    
+    @Published var attemptRemaining: Int
 
     let navModel: NavigationViewModel.AcuityReportUploadNavModel
 
@@ -34,18 +38,17 @@ class AcuityReportUploadViewModel: RoutableViewModel {
         navModel.scenarioModel
     }
     
-    var getTotalAttempts: Int {
-        self.navModel.attempt?.total ?? self.scenarioModel.pendingAttempts ?? 0
+    var isAttemptExausted: Bool {
+        attemptRemaining == 0
     }
+  
     
-    var attemptRemaining: Int {
-        self.navModel.attempt?.left ?? self.scenarioModel.pendingAttempts ?? 0
-    }
-
     // MARK: - Initialization
 
     init(router: AnyRouter, navModel: NavigationViewModel.AcuityReportUploadNavModel) {
         self.navModel = navModel
+        _totalAttempts = .init(initialValue: navModel.attempt?.total ?? navModel.scenarioModel.pendingAttempts ?? 0)
+        _attemptRemaining = .init(initialValue: navModel.attempt?.left ?? navModel.scenarioModel.pendingAttempts ?? 0)
         super.init(router: router)
     }
 }
@@ -80,6 +83,7 @@ extension AcuityReportUploadViewModel {
     func didTapAnalyse() {
         guard let _ = selectedFileName else { return }
         // TODO: Implement video upload and analysis
+        self.callProctoringEvalautionAndSpeechAPIParallely()
         print("Analyse tapped")
     }
 
@@ -197,7 +201,8 @@ extension AcuityReportUploadViewModel {
                         
                     case .response(let filePath):
                         self.selectedFileName = filePath.normalizedFilePath()
-                        self.postProctoringData(videoPath: ResourceUtils.getResourcPath(filePath))
+                        self.loadingState = .loaded
+//                        self.postProctoringData(videoPath: ResourceUtils.getResourcPath(filePath))
                         
                     }
                 }
@@ -212,68 +217,118 @@ extension AcuityReportUploadViewModel {
         self.tasks.insert(TaskUtility.AnyCancellableTask(uploadGoalTask))
     }
     
-    // MARK: Post Proctoring
-    private func postProctoringData(videoPath: String)  {
-        
-        self.loadingState = .loading(title: "Fetching Video Analysis", message: "Please wait.")
-        let model = AcuityReportUploadDataModel.PostVideoProctoring(videoPath: videoPath)
+    // Call Video Procetoring, Evaluation Parameter & speech analysis parallely
+    // MARK: - Parallel API Caller
+    private func callProctoringEvalautionAndSpeechAPIParallely() {
+        guard let videoPath = ResourceUtils.getResourceURLPath(selectedFileName)?.absoluteString  else {
+            self.toast = .init(style: .error, message: "Something went wrong!")
+            return
+        }
         Task { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
+            
+            self.loadingState = .loading(
+                title: "Processing Video Analysis",
+                message: "Running proctoring, evaluation & speech analysis..."
+            )
+            
             do {
-                
-                let responseModel = try await ApiService.shared.postRequestAsyncWithCustomToken(
-                    model,
-                    payload: model.payload,
-                    responseType: AcuityReportUploadDataModel.VideoAnalysisResponse.self,
-                    token: EnvironmentVariable.ACCESS_TOKEN_AI,
-                    baseURL: APIConst.AI_Base_Url
-                )
-                
-                Logger.shared.log(.debug, message: "\(responseModel.self)")
-                self.postVideoParameters(videoPath: videoPath)
-                
+                try await withThrowingTaskGroup(of: Void.self) { group in
+                    group.addTask { [weak self] in
+                        try await self?.postProctoringData(videoPath: videoPath)
+                    }
+                    group.addTask { [weak self] in
+                        try await self?.postVideoParameters(videoPath: videoPath)
+                    }
+                    group.addTask { [weak self] in
+                        try await self?.callSpeechAnalysisAPI(videoPath: videoPath)
+                    }
+                    for try await _ in group {}
+                }
+//                self.loadingState = .loaded
+                Logger.shared.log(.info, message: "✅ All parallel analyses completed")
+                guard let speechAnalysisResponse else {
+                    toast = .init(style: .error, message: "Something went wring!")
+                    return
+                }
+                self.callSpeechInsightsAPI(videoPath: videoPath, speechAnalysisResponse: speechAnalysisResponse)
             } catch {
                 self.loadingState = .none
-                Logger.shared.log(.error, message: "Error occured, api: \(model.path),\nerror: \(error.localizedDescription)\nrefL\(self)")
+                Logger.shared.log(.error, message: "❌ Parallel execution failed: \(error.localizedDescription)")
             }
         }
     }
     
-    private func postVideoParameters(videoPath: String) {
-        self.loadingState = .loading(title: "Evaluating Video Parameters", message: "Please wait.")
-        let model = AcuityReportUploadDataModel.EvaluateVideoParameterRequestModel(videoPath: videoPath, scenario: self.navModel.scenarioModel)
+    
+    // MARK: Post Proctoring
+    private func postProctoringData(videoPath: String) async throws {
+        let model = AcuityReportUploadDataModel.PostVideoProctoring(videoPath: videoPath)
         
-        Task { [weak self] in
-            guard let self else { return }
-            
-            do {
-                
-                let responseModel = try await ApiService.shared.postRequestAsyncWithCustomToken(
-                    model,
-                    payload: model.getPayload,
-                    responseType: AcuityReportUploadDataModel.ScenarioAnalysisResponse.self,
-                    token: EnvironmentVariable.ACCESS_TOKEN_AI,
-                    baseURL: APIConst.AI_Base_Url
-                )
-                
-                Logger.shared.log(.debug, message: "\(responseModel.self)")
-                self.scenarioAnalysisResponse = responseModel
-                self.currentVideoPath = videoPath
-                self.callPostUsageAPI(
-                    apiQueried: APIConst.AI_Base_Url + "/" + APIConst.courseBaseUrl + "/" + APIConst.evaluateVideoParameter,
-                    inputTokens: responseModel.usage?.llmInputTokens ?? 0,
-                    outputTokens: responseModel.usage?.llmOutputTokens ?? 0,
-                    totalToken: responseModel.usage?.llmTotalTokens ?? 0,
-                    sttMinutes: responseModel.usage?.sttMinutes ?? 0
-                )
-                self.callSpeechAnalysisAPI(videoPath: videoPath)
-                
-            } catch {
-                self.loadingState = .none
-                Logger.shared.log(.error, message: "Error occured, api: \(model.path),\nerror: \(error.localizedDescription)\nrefL\(self)")
-            }
+        do {
+            let responseModel = try await ApiService.shared.postRequestAsyncWithCustomToken(
+                model,
+                payload: model.payload,
+                responseType: AcuityReportUploadDataModel.VideoAnalysisResponse.self,
+                token: EnvironmentVariable.ACCESS_TOKEN_AI,
+                baseURL: APIConst.AI_Base_Url
+            )
+            Logger.shared.log(.debug, message: "\(responseModel.self)")
+        } catch {
+            throw APIError.customError(message: "Proctoring: \(error.localizedDescription)")
         }
     }
+    
+    private func postVideoParameters(videoPath: String) async throws {
+        let model = AcuityReportUploadDataModel.EvaluateVideoParameterRequestModel(
+            videoPath: videoPath,
+            scenario: self.navModel.scenarioModel
+        )
+        
+        do {
+            let responseModel = try await ApiService.shared.postRequestAsyncWithCustomToken(
+                model,
+                payload: model.getPayload,
+                responseType: AcuityReportUploadDataModel.ScenarioAnalysisResponse.self,
+                token: EnvironmentVariable.ACCESS_TOKEN_AI,
+                baseURL: APIConst.AI_Base_Url
+            )
+            
+            Logger.shared.log(.debug, message: "\(responseModel.self)")
+            self.scenarioAnalysisResponse = responseModel
+            self.currentVideoPath = videoPath
+            self.callPostUsageAPI(
+                apiQueried: APIConst.AI_Base_Url + "/" + APIConst.courseBaseUrl + "/" + APIConst.evaluateVideoParameter,
+                inputTokens: responseModel.usage?.llmInputTokens ?? 0,
+                outputTokens: responseModel.usage?.llmOutputTokens ?? 0,
+                totalToken: responseModel.usage?.llmTotalTokens ?? 0,
+                sttMinutes: responseModel.usage?.sttMinutes ?? 0
+            )
+        } catch {
+            throw APIError.customError(message: "Parameters: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: Speech Analysis API
+    private func callSpeechAnalysisAPI(videoPath: String) async throws {
+        let model = AcuityReportUploadDataModel.SpeechAnalysisRequestModel(videoPath: videoPath)
+        
+        do {
+            let response = try await ApiService.shared.postRequestAsyncWithCustomToken(
+                model,
+                payload: model.payload,
+                responseType: AcuityReportUploadDataModel.SpeechAnalysisResponse.self,
+                token: EnvironmentVariable.ACCESS_TOKEN_AI,
+                baseURL: APIConst.AI_Base_Url
+            )
+            
+            Logger.shared.log(.debug, message: "\(response.self)")
+            self.speechAnalysisResponse = response
+//            self.callSpeechInsightsAPI(videoPath: videoPath, speechAnalysisResponse: response)
+        } catch {
+            throw APIError.customError(message: "Speech: \(error.localizedDescription)")
+        }
+    }
+
     
     private func callPostUsageAPI(
         apiQueried: String,
@@ -285,7 +340,7 @@ extension AcuityReportUploadViewModel {
         attemptId: Int = 0,
         sttMinutes: Double
     ) {
-        self.loadingState = .loading(title: "Posting Usage Data", message: "Please wait.")
+//        self.loadingState = .loading(title: "Posting Usage Data", message: "Please wait.")
 
         let payload = AcuityReportUploadDataModel.PostUsageRequestModel.Payload(
             apiQueried: apiQueried,
@@ -310,38 +365,11 @@ extension AcuityReportUploadViewModel {
                 )
 
                 Logger.shared.log(.debug, message: "\(response.self)")
-                self.loadingState = .loaded
+//                self.loadingState = .loaded
 
             } catch {
-                self.loadingState = .none
-                Logger.shared.log(.error, message: "Error occured, api: \(model.path),\nerror: \(error.localizedDescription)\nref:\(self)")
-            }
-        }
-    }
-
-    // MARK: Speech Analysis API
-    private func callSpeechAnalysisAPI(videoPath: String) {
-        self.loadingState = .loading(title: "Analyzing Speech", message: "Please wait.")
-
-        let model = AcuityReportUploadDataModel.SpeechAnalysisRequestModel(videoPath: videoPath)
-
-        Task { [weak self] in
-            guard let self else { return }
-            do {
-                let response = try await ApiService.shared.postRequestAsyncWithCustomToken(
-                    model,
-                    payload: model.payload,
-                    responseType: AcuityReportUploadDataModel.SpeechAnalysisResponse.self,
-                    token: EnvironmentVariable.ACCESS_TOKEN_AI,
-                    baseURL: APIConst.AI_Base_Url
-                )
-
-                Logger.shared.log(.debug, message: "\(response.self)")
-                self.speechAnalysisResponse = response
-                self.callSpeechInsightsAPI(videoPath: videoPath, speechAnalysisResponse: response)
-
-            } catch {
-                self.loadingState = .none
+//                self.loadingState = .none
+                toast = .init(style: .error, message: "Something went wrong!")
                 Logger.shared.log(.error, message: "Error occured, api: \(model.path),\nerror: \(error.localizedDescription)\nref:\(self)")
             }
         }
@@ -440,6 +468,8 @@ extension AcuityReportUploadViewModel {
                 Logger.shared.log(.debug, message: "\(response.self)")
                 self.loadingState = .loaded
                 self.toast = Toast(style: .success, message: response.message ?? "Analysis saved successfully")
+                self.attemptRemaining = max(0, self.attemptRemaining - 1)
+                self.selectedFileName = nil
                 
             } catch {
                 self.loadingState = .none
