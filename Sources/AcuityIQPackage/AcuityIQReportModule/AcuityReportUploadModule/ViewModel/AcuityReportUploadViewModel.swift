@@ -109,8 +109,23 @@ extension AcuityReportUploadViewModel {
             toast = Toast(style: .info, message: "Product knowledge document is not available.")
             return
         }
+        
+        guard let documentPathURL: URL =  ResourceUtils.getResourceURLPath(knowledgeDocument) else {
+            toast = .init(style: .warning, message: "Something went wrong!")
+            return
+        }
+        
+        switch documentPathURL.pathExtension {
+        case "pdf":
+            let navModel: NavigationViewModel.PdfViewerNavModel = .init(pdfURL: documentPathURL)
+            NavigationService.shared.navigate(using: router, to: .pdfViewerNavModel(navModel))
+            
+        default:
+            let navModel = NavigationViewModel.ResourceViewModel(filePath: documentPathURL.absoluteString, isOnlineType: true)
+            NavigationService.shared.navigate(using: router, to: .resourceView(navModel))
+        }
         // TODO: Navigate to document viewer
-        print("Product Knowledge tapped: \(knowledgeDocument)")
+        Logger.shared.log(.info, message: "Product Knowledge tapped: \(knowledgeDocument)")
     }
 
     func didTapReferenceVideo() {
@@ -119,8 +134,17 @@ extension AcuityReportUploadViewModel {
             toast = Toast(style: .info, message: "Reference video is not available.")
             return
         }
+        
+        guard let videoPathURL: URL =  ResourceUtils.getResourceURLPath(referenceVideo) else {
+            toast = .init(style: .warning, message: "Something went wrong!")
+            return
+        }
+        
+        let navModel = NavigationViewModel.ResourceViewModel(filePath: videoPathURL.absoluteString, isOnlineType: true)
+        NavigationService.shared.navigate(using: router, to: .resourceView(navModel))
+        
         // TODO: Navigate to video player
-        print("Reference Video tapped: \(referenceVideo)")
+        Logger.shared.log(.info, message: "Reference Video tapped: \(referenceVideo)")
     }
 }
 
@@ -248,7 +272,7 @@ extension AcuityReportUploadViewModel {
 //                self.loadingState = .loaded
                 Logger.shared.log(.info, message: "✅ All parallel analyses completed")
                 guard let speechAnalysisResponse else {
-                    toast = .init(style: .error, message: "Something went wring!")
+                    toast = .init(style: .error, message: "Something went wrong!")
                     return
                 }
                 self.callSpeechInsightsAPI(videoPath: videoPath, speechAnalysisResponse: speechAnalysisResponse)

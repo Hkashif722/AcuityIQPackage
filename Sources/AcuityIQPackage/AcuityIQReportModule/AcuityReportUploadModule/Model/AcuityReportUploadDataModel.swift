@@ -274,11 +274,14 @@ extension AcuityReportUploadDataModel {
             fullpath = fullpath.appending(EnvironmentVariable.SAS_TOKEN)
             return fullpath
         }
+        
+        var computedVideoPath: String {
+            AcuityIQAPIManager.shared.isUAT ? videoPath.appending(EnvironmentVariable.SAS_TOKEN) : videoPath
+        }
+        
         var getPayload: ScenarioPayload {
             ScenarioPayload(
-                mediaURL: videoPath.appending(
-                    EnvironmentVariable.SAS_TOKEN
-                ),
+                mediaURL: computedVideoPath,
                 parameters: scenario.evaluationParameters,
                 knowledgeURL: getFullKnowledgePath,
                 description: scenario.scenarioDescription,
@@ -407,9 +410,13 @@ extension AcuityReportUploadDataModel {
         }
 
         let videoPath: String
+        
+        var computedVideoPath: String {
+            AcuityIQAPIManager.shared.isUAT ? videoPath.appending(EnvironmentVariable.SAS_TOKEN) : videoPath
+        }
 
         var payload: Payload {
-            Payload(mediaURL: videoPath.appending(EnvironmentVariable.SAS_TOKEN))
+            Payload(mediaURL: computedVideoPath)
         }
 
         var path: String {
@@ -463,10 +470,15 @@ extension AcuityReportUploadDataModel {
         let videoPath: String
         let scenarioResponse: ScenarioAnalysisResponse
         let speechAnalysisResponse: SpeechAnalysisResponse
+        
+        var computedVideoPath: String {
+            AcuityIQAPIManager.shared.isUAT ? videoPath.appending(EnvironmentVariable.SAS_TOKEN) : videoPath
+        }
+
 
         var payload: Payload {
             Payload(
-                mediaURL: videoPath.appending(EnvironmentVariable.SAS_TOKEN),
+                mediaURL: computedVideoPath,
                 normalizedScore: scenarioResponse.normalizedScore ?? 0.0,
                 overallAverage: speechAnalysisResponse.overallAverage ?? 0.0,
                 contentRelevance: scenarioResponse.contentRelevance ?? "",

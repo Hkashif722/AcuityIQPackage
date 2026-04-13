@@ -26,7 +26,10 @@ internal struct APIConst {
     static let PostFileUpload = "MediaLibrary/PostFileUpload"
     
     //AI API
-    static let AI_Base_Url = "https://ailmsdev.gogetempowered.com"
+    static nonisolated(unsafe) var AI_Base_Url: String {
+        AcuityIQAPIManager.shared.isUAT ? "https://ailmsdev.gogetempowered.com" :  "https://ailmsuat.gogetempowered.com"
+    }
+    
     static let videoProctoring = "video_proctoring"
     static let evaluateVideoParameter = "evaluate_video_parameters"
     static let speechAnalysis = "speech_analysis"

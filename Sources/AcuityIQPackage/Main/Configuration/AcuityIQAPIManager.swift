@@ -39,6 +39,11 @@ public actor AcuityIQAPIManager {
         guard let provider = config?.tokenProvider else { return { "" } }
         return { provider() ?? "" }
     }
+    
+    nonisolated public var isUAT: Bool {
+        APIConst.baseURL.contains("uat") ?? false
+    }
+    
 
     private init() {}
 
@@ -58,12 +63,14 @@ public actor AcuityIQAPIManager {
     }
 
     private func configureSwiftUIUtilityEnvironment(_ config: AcuityIQPackageConfig) {
+        
+        let baseURL = isUAT ? APIConst.baseURL : APIConst.ContentPath
         let modelConfiguration = SwiftUtilityConfig(
             encryptionDecryptionKey: config.acuityIQEnvironmentConfig.encryptionDecryptionKey,
             isBlobEnabled: config.isBlobEnabled,
             orgCode: config.orgCode,
             configurableDate: config.dateConfiguration,
-            baseURL: APIConst.baseURL,
+            baseURL: baseURL,
             lxpOPath: APIConst.lxpOPath,
             lxpBlobPath: APIConst.lxpBlobPath,
             lxpBlobPath1: APIConst.lxpBlobPath1
