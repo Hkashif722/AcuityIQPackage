@@ -28,7 +28,7 @@ public protocol AcuityIQPresentable: AnyObject {
     ///   - courseId: Optional course ID
     ///   - animated: Whether to animate the presentation
     ///   - completion: Optional completion handler
-    func presentAcuityReportUpload(projectID: Int, moduleId: Int?, courseId: Int?, attempt: (total: Int?, left: Int?)?, animated: Bool, completion: (() -> Void)?)
+    func presentAcuityReportUpload(projectID: Int, moduleId: Int?, courseId: Int?, attempt: (total: Int?, left: Int?)?, moduleAttempts: [[String: Any]]?, animated: Bool, completion: (() -> Void)?)
 }
 
 // MARK: - UIViewController + AcuityIQPresentable
@@ -56,13 +56,14 @@ extension UIViewController: AcuityIQPresentable {
     ///   - courseId: Optional course ID (default: nil)
     ///   - animated: Whether to animate the presentation (default: true)
     ///   - completion: Optional completion handler called after presentation
-    public func presentAcuityReportUpload(projectID: Int, moduleId: Int? = nil, courseId: Int? = nil, attempt: (total: Int?, left: Int?)?, animated: Bool = true, completion: (() -> Void)? = nil) {
+    public func presentAcuityReportUpload(projectID: Int, moduleId: Int? = nil, courseId: Int? = nil, attempt: (total: Int?, left: Int?)?, moduleAttempts: [[String: Any]]? = nil, animated: Bool = true, completion: (() -> Void)? = nil) {
         AcuityIQ.shared.presentReportUpload(
             from: self,
             projectID: projectID,
             moduleId: moduleId,
             courseId: courseId,
             attempt: attempt,
+            moduleAttempts: moduleAttempts,
             animated: animated,
             completion: completion
         )

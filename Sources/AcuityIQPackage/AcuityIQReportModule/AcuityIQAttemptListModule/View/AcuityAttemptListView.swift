@@ -19,27 +19,48 @@ struct AcuityAttemptListView: View {
     }
     
     var body: some View {
+        
         VStack(spacing: 0) {
-            SearchTextField(text: $vm.searchText, placeholder: "Search attempts...")
-                .padding(10)
-            
-            attemptListView
+            searchView
+            attemptListContentView
         }
+        .customBackButtonPkg(navTitle: "Attempts", action: vm.goBack)
     }
     
-    private var attemptListView: some View {
+    private var searchView: some View {
+        SearchTextField(
+            text: $vm.searchText,
+            placeholder: "Search attempts...",
+            font: .system(size: 14, weight: .medium),
+            height: 45
+        )
+        .padding(10)
+    }
+    
+    
+    private var attemptListContentView: some View {
         ScrollView {
-            LazyVStack(spacing: 10) {
-                ForEach(vm.attempts) { attempt in
-                    AcuityAttemptItemView(
-                        attempt: attempt,
-                        onTap: vm.didTapAttempt
-                    )
-                }
+            switch vm.attempts.isEmpty {
+            case false:
+                attemptListView
+            default:
+                EmptyStateView(emptyState: .noData)
             }
         }
         .versionedContentMarginsPkg()
         .applyScrollBounceBehaviorPkg()
+    }
+    
+    private var attemptListView: some View {
+        LazyVStack(spacing: 10) {
+            ForEach(vm.attempts) { attempt in
+                AcuityAttemptItemView(
+                    attempt: attempt,
+                    onManagerEvaluationTap: vm.onManagerEvalautionTap,
+                    onTap: vm.didTapAttempt
+                )
+            }
+        }
     }
 }
 

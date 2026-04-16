@@ -80,7 +80,7 @@ extension DetailResportViewModel {
     private func fetchAllAttemptReport() async -> AllAttemptDataModel.AllAttemptResponse? {
         let model = AllAttemptDataModel.GetSecnaioOverallReportRequestModel(
             secnarioID: navModel.scenarioID,
-            userID: navModel.secnarioAttempt.userId
+            userID: navModel.secnarioAttempt.userId ?? 0
         )
 
         do {

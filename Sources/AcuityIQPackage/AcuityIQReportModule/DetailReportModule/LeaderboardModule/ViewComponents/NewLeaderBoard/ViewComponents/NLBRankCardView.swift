@@ -2,8 +2,13 @@
 //  NLBRankCardView.swift
 //  AcuityIQPackage
 //
-//  Expandable rank card shown in the "DETAILED RANKINGS" list.
-//  Layout: rank column | avatar + info | watch button
+//  Expandable rank card in the "DETAILED RANKINGS" list.
+//  Layout: rank column | avatar | info (name / score bar / badge strip) | watch button
+//
+//  Badge strip shows all 10 LeaderboardDataModel.NLBBadge entries:
+//    • Coloured when earned
+//    • Grey + lock pip when not earned
+//  Tapping any badge fires onBadgeTapped — parent owns the sheet.
 //
 
 import SwiftUI
@@ -13,50 +18,47 @@ struct NLBRankCardView: View {
 
     @State private var isExpanded: Bool
 
-    let rank: Int
-    let attempt: LeaderboardDataModel.LeaderboardAttempt
-    let onAttemptBadgeSelection: () -> Void
-    let onHerculeanEffortSelection: () -> Void
+    let rank:                    Int
+    let attempt:                 LeaderboardDataModel.LeaderboardAttempt
     let onWatchRecordingPressed: () -> Void
+    let onBadgeTapped:           (LeaderboardDataModel.NLBBadge) -> Void
 
     private var rankColor: Color {
         LeaderboardDataModel.LeaderboardAttempt.nlbRankColor(for: rank)
     }
 
     init(
-        rank: Int,
-        attempt: LeaderboardDataModel.LeaderboardAttempt,
-        initiallyExpanded: Bool = false,
-        onAttemptBadgeSelection: @escaping () -> Void,
-        onHerculeanEffortSelection: @escaping () -> Void,
-        onWatchRecordingPressed: @escaping () -> Void
+        rank:                    Int,
+        attempt:                 LeaderboardDataModel.LeaderboardAttempt,
+        initiallyExpanded:       Bool = false,
+        onWatchRecordingPressed: @escaping () -> Void,
+        onBadgeTapped:           @escaping (LeaderboardDataModel.NLBBadge) -> Void
     ) {
-        self.rank = rank
-        self.attempt = attempt
-        self._isExpanded = State(initialValue: initiallyExpanded)
-        self.onAttemptBadgeSelection = onAttemptBadgeSelection
-        self.onHerculeanEffortSelection = onHerculeanEffortSelection
+        self.rank                    = rank
+        self.attempt                 = attempt
+        self._isExpanded             = State(initialValue: initiallyExpanded)
         self.onWatchRecordingPressed = onWatchRecordingPressed
+        self.onBadgeTapped           = onBadgeTapped
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // MARK: Body
+    // ─────────────────────────────────────────────────────────────────
 
     var body: some View {
         VStack(spacing: 0) {
 
-            // Top accent stripe
+            // Coloured top accent stripe
             rankColor
-                .frame(maxWidth: .infinity)
-                .frame(height: 3)
-                .clipShape(
-                    RoundedCorner(radius: 12, corners: [.topLeft, .topRight])
-                )
+                .frame(maxWidth: .infinity, minHeight: 3, maxHeight: 3)
+                .clipShape(RoundedCorner(radius: 12, corners: [.topLeft, .topRight]))
 
             // Main content row
             mainRow
                 .padding(.horizontal, 12)
                 .padding(.vertical, 12)
 
-            Divider()
-                .padding(.horizontal, 12)
+            Divider().padding(.horizontal, 12)
 
             // Star Quality toggle row
             NLBStarAnalysisToggleRow(
@@ -69,7 +71,7 @@ struct NLBRankCardView: View {
                 }
             )
 
-            // Expandable feedback
+            // Expandable feedback section
             if isExpanded {
                 NLBFeedbackSectionView(attempt: attempt)
                     .transition(
@@ -92,19 +94,21 @@ struct NLBRankCardView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
     }
 
-    // MARK: - Main Row
+    // ─────────────────────────────────────────────────────────────────
+    // MARK: Main Row
+    // ─────────────────────────────────────────────────────────────────
 
     private var mainRow: some View {
         HStack(alignment: .center, spacing: 12) {
             rankColumn
             avatarView
             infoColumn
-            Spacer()
+            Spacer(minLength: 8)
             watchButton
         }
     }
 
-    // MARK: Rank Column (medal icon + "#N" label)
+    // ── Rank column (medal icon + "#N" label) ─────────────────────────
 
     private var rankColumn: some View {
         VStack(spacing: 4) {
@@ -115,7 +119,6 @@ struct NLBRankCardView: View {
                         ? Color(hex: "F5C518")
                         : LeaderboardDataModel.LeaderboardAttempt.nlbMedalColor(for: rank)
                 )
-
             Text("#\(rank)")
                 .font(.subheadline.bold())
                 .foregroundStyle(rankColor)
@@ -123,21 +126,18 @@ struct NLBRankCardView: View {
         .frame(width: 32)
     }
 
-    // MARK: Avatar Circle
+    // ── Avatar circle ─────────────────────────────────────────────────
 
     private var avatarView: some View {
         ZStack {
             Circle()
                 .fill(rankColor.opacity(0.15))
                 .frame(width: 52, height: 52)
-                .overlay {
-                    Circle().stroke(rankColor, lineWidth: 2)
-                }
+                .overlay { Circle().stroke(rankColor, lineWidth: 2) }
 
-            // Profile picture or initials fallback
-            if let urlString = attempt.profilePicture, !urlString.isEmpty {
+            if let url = attempt.profileFullPathURL?.absoluteString, !url.isEmpty {
                 AsyncImageWithFallback(
-                    urlString:attempt.profileFullPathURL?.absoluteString,
+                    urlString: url,
                     defaultImageName: "user",
                     contentMode: .fill,
                     bundle: .module
@@ -153,7 +153,7 @@ struct NLBRankCardView: View {
         }
     }
 
-    // MARK: Info Column (name + score bar + badges)
+    // ── Info column (name + score bar + badge strip) ──────────────────
 
     private var infoColumn: some View {
         VStack(alignment: .leading, spacing: 5) {
@@ -163,8 +163,7 @@ struct NLBRankCardView: View {
                 .lineLimit(1)
 
             scoreBarRow
-
-            badgeRow
+            badgeStrip
         }
     }
 
@@ -179,7 +178,6 @@ struct NLBRankCardView: View {
                     Capsule()
                         .fill(Color(.systemGray5))
                         .frame(height: 5)
-
                     Capsule()
                         .fill(rankColor)
                         .frame(width: geo.size.width * attempt.nlbScoreProgress, height: 5)
@@ -193,32 +191,63 @@ struct NLBRankCardView: View {
         }
     }
 
-    private var badgeRow: some View {
-        let badges = attempt.nlbBadgeItems
-        return HStack(spacing: 4) {
-            ForEach(badges.indices, id: \.self) { i in
-                Image(systemName: badges[i].icon)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(badges[i].color)
-                    .frame(width: 22, height: 22)
-                    .background(badges[i].color.opacity(0.12))
-                    .clipShape(Circle())
-                    .onTapGesture {
-                        if badges[i].icon == "flame.fill" || badges[i].icon == "doc.fill" {
-                            onAttemptBadgeSelection()
-                        } else if badges[i].icon == "heart.fill" {
-                            onHerculeanEffortSelection()
-                        }
-                    }
-            }
+    // ─────────────────────────────────────────────────────────────────
+    // MARK: Badge Strip
+    //
+    // All 10 LeaderboardDataModel.NLBBadge entries in a scrollable row.
+    //   • Earned   → vibrant accent fill
+    //   • Unearned → grey fill + tiny lock pip at bottom-trailing
+    // Tapping any badge fires onBadgeTapped — parent owns the sheet.
+    // ─────────────────────────────────────────────────────────────────
 
-            Text("\(badges.count) badge\(badges.count == 1 ? "" : "s")")
+    private var badgeStrip: some View {
+        let badges      = attempt.nlbBadges          // always exactly 10
+        let earnedCount = badges.filter { $0.isEarned }.count
+        let topRow      = Array(badges.prefix(5))    // indices 0–4
+        let bottomRow   = Array(badges.suffix(5))    // indices 5–9
+        
+        return VStack(alignment: .leading, spacing: 4) {
+            
+            // Row 1 — Record Breaker, All Star, Storyteller, Product Wizard, Hustler
+            HStack(spacing: 5) {
+                ForEach(topRow) { badge in
+                    badgeButton(badge)
+                }
+            }
+            
+            // Row 2 — Super Speaker, Honourable One, Clean Slate, Herculean, Mr.Consistent
+            HStack(spacing: 5) {
+                ForEach(bottomRow) { badge in
+                    badgeButton(badge)
+                }
+            }
+            
+            // Summary label
+            Text("\(earnedCount) of \(badges.count) badges earned")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
     }
+    
+    private func badgeButton(_ badge: LeaderboardDataModel.NLBBadge) -> some View {
+        Button { onBadgeTapped(badge) } label: {
+            ZStack {
+                Circle()
+                    .fill(badge.displayColor.opacity(badge.isEarned ? 0.15 : 0.15))
+                    .frame(width: 26, height: 26)
 
+                badge.icon.imageView(size: 12)
+                    .foregroundStyle(badge.displayColor)
+            }
+            
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(badge.name), \(badge.isEarned ? "earned" : "not yet earned"). Tap for details.")
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // MARK: Watch Button
+    // ─────────────────────────────────────────────────────────────────
 
     private var watchButton: some View {
         HStack(spacing: 4) {
@@ -232,31 +261,40 @@ struct NLBRankCardView: View {
         .padding(.vertical, 8)
         .background(Color(.systemBackground))
         .clipShape(Capsule())
-        .overlay {
-            Capsule()
-                .stroke(Color(.separator), lineWidth: 1.5)
-        }
+        .overlay { Capsule().stroke(Color(.separator), lineWidth: 1.5) }
         .anyButton(.press, action: onWatchRecordingPressed)
     }
 }
 
 // MARK: - Preview
-#if Debug
+
+
+#if DEBUG
+@available(iOS 17.0, *)
 #Preview {
+    // Preview owns the sheet state — mirrors real parent usage
+    @Previewable @State var selectedBadge: LeaderboardDataModel.NLBBadge?
+
     ScrollView {
         LazyVStack(spacing: 12) {
-            ForEach(Array(LeaderboardDataModel.LeaderboardAttempt.previewArray.enumerated()), id: \.element.id) { index, attempt in
+            ForEach(
+                Array(LeaderboardDataModel.LeaderboardAttempt.previewArray.enumerated()),
+                id: \.element.id
+            ) { idx, attempt in
                 NLBRankCardView(
-                    rank: index + 1,
-                    attempt: attempt,
-                    initiallyExpanded: index == 2,
-                    onAttemptBadgeSelection: {},
-                    onHerculeanEffortSelection: {},
-                    onWatchRecordingPressed: {}
+                    rank:                    idx + 1,
+                    attempt:                 attempt,
+                    initiallyExpanded:       idx == 0,
+                    onWatchRecordingPressed: { },
+                    onBadgeTapped:           { badge in selectedBadge = badge }
                 )
             }
         }
         .padding()
+    }
+    .background(Color(.systemGroupedBackground))
+    .sheet(item: $selectedBadge) { badge in
+        NLBBadgeDetailView(badge: badge)
     }
 }
 #endif

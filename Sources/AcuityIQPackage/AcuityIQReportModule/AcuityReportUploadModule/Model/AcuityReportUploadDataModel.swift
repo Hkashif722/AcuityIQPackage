@@ -46,11 +46,13 @@ extension AcuityReportUploadDataModel {
 
     static func actionButtons(
         onEvaluationCriteria: @escaping () -> Void,
-        onKeywords: @escaping () -> Void
+        onKeywords: @escaping () -> Void,
+        onViewAllAttempts:  @escaping () -> Void
     ) -> [ActionButton] {
         [
             ActionButton(title: "Evaluation Criteria", action: onEvaluationCriteria),
-            ActionButton(title: "Keywords", action: onKeywords)
+            ActionButton(title: "Keywords", action: onKeywords),
+            ActionButton(title: "View Attempts", action: onViewAllAttempts)
         ]
     }
 
@@ -105,7 +107,7 @@ extension AcuityReportUploadDataModel {
         
         struct Payload: Codable {
             let videoURL: String
-            let sasToken: String = EnvironmentVariable.SAS_TOKEN
+            let sasToken: String
             let organizationID: String = EnvironmentVariable.ORG_ID
             
             enum CodingKeys: String, CodingKey {
@@ -114,14 +116,20 @@ extension AcuityReportUploadDataModel {
                 case organizationID = "organization_id"
             }
             
-            init(videoURL: String) {
+            init(videoURL: String, sasToken: String) {
                 self.videoURL  = videoURL
+                self.sasToken = sasToken
             }
         }
         
         let videoPath: String
         
-        var payload: Payload { Payload(videoURL: videoPath) }
+        var getSasTokenPath: String {
+            let token = AcuityIQAPIManager.shared.isUAT ? EnvironmentVariable.SAS_TOKEN : ""
+            return token
+        }
+        
+        var payload: Payload { Payload(videoURL: videoPath, sasToken: getSasTokenPath) }
         
         var path: String {
             [
@@ -269,9 +277,17 @@ extension AcuityReportUploadDataModel {
         
         let videoPath: String
         let scenario: AcuityIQReportDataModel.Scenario
-        var getFullKnowledgePath: String {
-            var fullpath = ResourceUtils.getResourcPath(scenario.knowledgeDocument)
-            fullpath = fullpath.appending(EnvironmentVariable.SAS_TOKEN)
+        var getFullKnowledgePath: String? {
+            guard let knowledgeDocumentPath = scenario.knowledgeDocument, !knowledgeDocumentPath.isEmpty else { return nil }
+            var fullpath = ResourceUtils.getResourcPath(knowledgeDocumentPath)
+            fullpath = AcuityIQAPIManager.shared.isUAT ? fullpath.appending(EnvironmentVariable.SAS_TOKEN) : fullpath
+            return fullpath
+        }
+        
+        var getRefrenceVidepPath: String? {
+            guard let refrenceVideoPath = scenario.referenceVideo, !refrenceVideoPath.isEmpty  else { return nil }
+            var fullpath = ResourceUtils.getResourcPath(refrenceVideoPath)
+            fullpath = AcuityIQAPIManager.shared.isUAT ? fullpath.appending(EnvironmentVariable.SAS_TOKEN) : fullpath
             return fullpath
         }
         
@@ -285,7 +301,7 @@ extension AcuityReportUploadDataModel {
                 parameters: scenario.evaluationParameters,
                 knowledgeURL: getFullKnowledgePath,
                 description: scenario.scenarioDescription,
-                referenceVideo: scenario.referenceVideo,
+                referenceVideo: getRefrenceVidepPath,
                 keywords: scenario.keywords,
                 successCriteria: scenario.successCriteria,
                 contentType: scenario.usageDescription
@@ -455,7 +471,7 @@ extension AcuityReportUploadDataModel {
             let overallAverage: Double
             let contentRelevance: String
             let contentOverall: String
-            let confidenceScore: Double
+            let confidenceScore: Double?
 
             enum CodingKeys: String, CodingKey {
                 case mediaURL         = "media_url"
@@ -470,6 +486,7 @@ extension AcuityReportUploadDataModel {
         let videoPath: String
         let scenarioResponse: ScenarioAnalysisResponse
         let speechAnalysisResponse: SpeechAnalysisResponse
+        let videoAnalysisResponse: AcuityReportUploadDataModel.VideoAnalysisResponse?
         
         var computedVideoPath: String {
             AcuityIQAPIManager.shared.isUAT ? videoPath.appending(EnvironmentVariable.SAS_TOKEN) : videoPath
@@ -483,7 +500,7 @@ extension AcuityReportUploadDataModel {
                 overallAverage: speechAnalysisResponse.overallAverage ?? 0.0,
                 contentRelevance: scenarioResponse.contentRelevance ?? "",
                 contentOverall: scenarioResponse.contentOverall ?? "",
-                confidenceScore: 0.0
+                confidenceScore: videoAnalysisResponse?.response?.persons?.first?.overallConfidence
             )
         }
 

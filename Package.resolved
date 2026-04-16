@@ -1,5 +1,5 @@
 {
-  "originHash" : "3da970b0463f7657bffef81f5985f71a8d49908e17f6ce1a602fe5dd63dc5e44",
+  "originHash" : "d0b2a80ce25e83fb0fbfba45ed91117dab8ecf29193e523004c77303a3123281",
   "pins" : [
     {
       "identity" : "charts",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "dd9c72e3d7e751e769971092a6bd72d39198ae63",
         "version" : "5.1.0"
-      }
-    },
-    {
-      "identity" : "ios_apimanager",
-      "kind" : "remoteSourceControl",
-      "location" : "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
-      "state" : {
-        "revision" : "3de2b013c10468bdf32f6ee0b481bcf3523cb27b",
-        "version" : "1.0.5"
       }
     },
     {
@@ -53,15 +44,6 @@
       "state" : {
         "revision" : "bf0a8b4628b0e24d60f090b382c15b96329ab92c",
         "version" : "5.3.6"
-      }
-    },
-    {
-      "identity" : "swiftuiutility",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Hkashif722/SwiftUIUtility",
-      "state" : {
-        "branch" : "update",
-        "revision" : "92d9722852f0389d1787fca909fa86cf136ca7fe"
       }
     }
   ],

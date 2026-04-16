@@ -25,6 +25,9 @@ public struct AcuityReportListView: View {
             reportListView
         }
         .loadingOverlayViewPkg(state: vm.loadingState)
+        .task {
+            await vm.getScenarioForUsers()
+        }
     }
     
     private var reportListView: some View {

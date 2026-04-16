@@ -16,14 +16,16 @@ let package = Package(
             targets: ["AcuityIQPackage"]),
     ],
     dependencies: [
-        .package(
-            url: "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
-            .upToNextMinor(from: "1.0.0")
-        ),
-        .package(
-            url: "https://github.com/Hkashif722/SwiftUIUtility",
-            branch: "update"
-        ),
+//        .package(
+//            url: "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
+//            .upToNextMinor(from: "1.0.0")
+//        ),
+        .package(path: "/Users/kashifhussain/Desktop/iOS_Network_Service/IOS_APIManager"),
+//        .package(
+//            url: "https://github.com/Hkashif722/SwiftUIUtility",
+//            branch: "update"
+//        ),
+            .package(path: "/Users/kashifhussain/Desktop/OJT_New_Design/SwiftUIUtility/SwiftUIUtility"),
         .package(
             url: "https://github.com/danielgindi/Charts.git",
             .upToNextMajor(from: "5.1.0")

@@ -22,7 +22,9 @@ enum AppNavigationDestination {
     case keywordsView(keywords: [String])
     case herculeanEffortView(strengths: [String])
     case attemptBadgeView(attemptNumber: Int, totalAttempts: Int, attemptsUsed: Int)
+    case badgeView(badge: LeaderboardDataModel.NLBBadge)
     case reportUploadView(navModel: NavigationViewModel.AcuityReportUploadNavModel)
+    case managerEvaluationView(navModel: NavigationViewModel.ManagerEvaluationNavModel)
 
 }
 
@@ -65,10 +67,20 @@ extension AppNavigationDestination: NavigationProtocol {
             self.showMediumSheet(router) { router in
                 AttemptBadgeView(router: router, attemptNumber: attemptNumber, totalAttempts: totalAttempts, attemptsUsed: attemptsUsed)
             }
+            
+        case .badgeView(let badge):
+            self.showMediumSheet(router) { router in
+                NLBBadgeDetailView(badge: badge)
+            }
 
         case .reportUploadView(let navModel):
             self.pushScreen(router) { router in
                 AcuityReportUploadView(router: router, navModel: navModel)
+            }
+            
+        case .managerEvaluationView(let navModel):
+            self.pushScreen(router) { router in
+                ManagerEvaluationView(router: router, navModel: navModel)
             }
 
         }

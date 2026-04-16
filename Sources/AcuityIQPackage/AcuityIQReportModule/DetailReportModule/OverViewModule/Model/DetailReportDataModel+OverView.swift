@@ -218,16 +218,13 @@ extension DetailReportDataModel.ScenarioAttemptResponse {
             min(max(value, range.lowerBound), range.upperBound)
         }
     }
-    
+
     var overallScoreModel: OverallScoreModel {
-        
         let score = overallScore ?? 0
         
-        let normalizedScore: Double = score > 5 ? score / 2 : score
-        
         return OverallScoreModel(
-            value: normalizedScore,
-            range: 0...5,
+            value: score,
+            range: 0...10,
             segments: .defaultSegments()
         )
     }

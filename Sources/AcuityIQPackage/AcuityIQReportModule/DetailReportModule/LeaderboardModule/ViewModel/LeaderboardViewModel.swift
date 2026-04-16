@@ -52,4 +52,8 @@ extension LeaderboardViewModel {
         let navModel = NavigationViewModel.ResourceViewModel(filePath: attempt.fullVideoPath, isOnlineType: true)
         NavigationService.shared.navigate(using: router, to: .resourceView(navModel))
     }
+    
+    func onBadgeSelect(_ badge: LeaderboardDataModel.NLBBadge) {
+        NavigationService.shared.navigate(using: router, to: AppNavigationDestination.badgeView(badge: badge))
+    }
 }

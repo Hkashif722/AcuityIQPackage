@@ -20,12 +20,16 @@ class AcuityReportUploadViewModel: RoutableViewModel {
     @Published var totalAttempts: Int
     
     @Published var attemptRemaining: Int
+    
+    @Published var showWarningDisclamirView: Bool = false
 
     let navModel: NavigationViewModel.AcuityReportUploadNavModel
+    let warningDisclamirText: String = "Please don't close or navigate away"
 
     // MARK: - Private Properties
     private var scenarioAnalysisResponse: AcuityReportUploadDataModel.ScenarioAnalysisResponse?
     private var speechAnalysisResponse: AcuityReportUploadDataModel.SpeechAnalysisResponse?
+    private var videoAnalysisResponse: AcuityReportUploadDataModel.VideoAnalysisResponse?
     private var currentVideoPath: String?
 
     // MARK: - Computed Properties
@@ -58,7 +62,7 @@ class AcuityReportUploadViewModel: RoutableViewModel {
 extension AcuityReportUploadViewModel {
 
     func didTapBrowseFiles() {
-        
+        self.showWarningDisclamirView = false
         let navModel = NavigationViewModel.DocumentPickerModel { [weak self] url in
             guard let self = self else { return }
             guard let url else {
@@ -77,12 +81,16 @@ extension AcuityReportUploadViewModel {
                 self.postVideoFile(fileURL: url)
             }
         }
-        NavigationService.shared.navigate(using: router, to: .showVideoPickerView(navModel))
+        NavigationService.shared.navigate(using: router, to: .showPassthroughVideoPickerView(navModel))
     }
 
     func didTapAnalyse() {
-        guard let _ = selectedFileName else { return }
+        guard let _ = selectedFileName else {
+            toast = .init(style: .warning, message: "Please select video file first.")
+            return
+        }
         // TODO: Implement video upload and analysis
+        self.showWarningDisclamirView = true
         self.callProctoringEvalautionAndSpeechAPIParallely()
         print("Analyse tapped")
     }
@@ -101,6 +109,32 @@ extension AcuityReportUploadViewModel {
             using: router,
             to: AppNavigationDestination.keywordsView(keywords: keywords)
         )
+    }
+    
+    func didTapViewAttempts() {
+        let attemptsNavModel: [AcuityIQReportDataModel.Scenario.Attempt]
+        
+        if let moduleAttempts = navModel.moduleAttempts {
+            do {
+                let data = try JSONSerialization.data(withJSONObject: moduleAttempts)
+                attemptsNavModel = try JSONDecoder().decode([AcuityIQReportDataModel.Scenario.Attempt].self, from: data)
+            } catch {
+                toast = .init(style: .error, message: "Something went wrong!")
+                return
+            }
+        } else {
+            guard let attempts = navModel.scenarioModel.attempts else {
+                toast = .init(style: .error, message: "Something went wrong!")
+                return
+            }
+            attemptsNavModel = attempts
+        }
+        
+        let navModel = NavigationViewModel.AcuityAttemptNavModel(
+            scenarioID: self.navModel.scenarioModel.scenarioId,
+            secnarioAttempts: attemptsNavModel
+        )
+        NavigationService.shared.navigate(using: router, to: AppNavigationDestination.attemptList(navModel: navModel))
     }
 
     func didTapProductKnowledge() {
@@ -275,9 +309,10 @@ extension AcuityReportUploadViewModel {
                     toast = .init(style: .error, message: "Something went wrong!")
                     return
                 }
-                self.callSpeechInsightsAPI(videoPath: videoPath, speechAnalysisResponse: speechAnalysisResponse)
+                self.callSpeechInsightsAPI(videoPath: videoPath, speechAnalysisResponse: speechAnalysisResponse, videoAnalysisResponse: videoAnalysisResponse)
             } catch {
                 self.loadingState = .none
+                toast = .init(style: .error, message: error.localizedDescription)
                 Logger.shared.log(.error, message: "❌ Parallel execution failed: \(error.localizedDescription)")
             }
         }
@@ -296,6 +331,7 @@ extension AcuityReportUploadViewModel {
                 token: EnvironmentVariable.ACCESS_TOKEN_AI,
                 baseURL: APIConst.AI_Base_Url
             )
+            self.videoAnalysisResponse = responseModel
             Logger.shared.log(.debug, message: "\(responseModel.self)")
         } catch {
             throw APIError.customError(message: "Proctoring: \(error.localizedDescription)")
@@ -402,7 +438,8 @@ extension AcuityReportUploadViewModel {
     // MARK: Speech Insights API
     private func callSpeechInsightsAPI(
         videoPath: String,
-        speechAnalysisResponse: AcuityReportUploadDataModel.SpeechAnalysisResponse
+        speechAnalysisResponse: AcuityReportUploadDataModel.SpeechAnalysisResponse,
+        videoAnalysisResponse: AcuityReportUploadDataModel.VideoAnalysisResponse?,
     ) {
         guard let scenarioResponse = self.scenarioAnalysisResponse else {
             self.loadingState = .loaded
@@ -414,7 +451,8 @@ extension AcuityReportUploadViewModel {
         let model = AcuityReportUploadDataModel.SpeechInsightsRequestModel(
             videoPath: videoPath,
             scenarioResponse: scenarioResponse,
-            speechAnalysisResponse: speechAnalysisResponse
+            speechAnalysisResponse: speechAnalysisResponse,
+            videoAnalysisResponse: videoAnalysisResponse
         )
 
         Task { [weak self] in
@@ -494,6 +532,11 @@ extension AcuityReportUploadViewModel {
                 self.toast = Toast(style: .success, message: response.message ?? "Analysis saved successfully")
                 self.attemptRemaining = max(0, self.attemptRemaining - 1)
                 self.selectedFileName = nil
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    guard let self else { return }
+                    self.goBack()
+                }
                 
             } catch {
                 self.loadingState = .none

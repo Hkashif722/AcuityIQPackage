@@ -28,7 +28,14 @@ struct AcuityReportUploadView: View {
             }
             .padding()
         }
-        .loadingOverlayViewPkg(state: viewModel.loadingState)
+        .loadingOverlayViewPkg(
+            state: viewModel.loadingState,
+            bottomContent: {
+                if viewModel.showWarningDisclamirView {
+                    UploadActionWarningBannerView(message: viewModel.warningDisclamirText)
+                }
+            }
+        )
         .toastViewPkg(toast: $viewModel.toast)
         .navigationTitle("Attempt left:")
         .toolbar {
@@ -54,7 +61,8 @@ extension AcuityReportUploadView {
         UploadActionButtonsView(
             buttons: AcuityReportUploadDataModel.actionButtons(
                 onEvaluationCriteria: viewModel.didTapEvaluationCriteria,
-                onKeywords: viewModel.didTapKeywords
+                onKeywords: viewModel.didTapKeywords,
+                onViewAllAttempts: viewModel.didTapViewAttempts
             )
         )
     }

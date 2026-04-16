@@ -39,7 +39,8 @@ struct UploadActionButtonsView: View {
     UploadActionButtonsView(
         buttons: AcuityReportUploadDataModel.actionButtons(
             onEvaluationCriteria: { print("Evaluation") },
-            onKeywords: { print("Keywords") }
+            onKeywords: { print("Keywords") },
+            onViewAllAttempts: { print("attempts") }
         )
     )
     .padding()

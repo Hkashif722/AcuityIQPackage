@@ -30,7 +30,6 @@ class AcuityReportViewModel: RoutableViewModel {
     
     init(router: AnyRouter) {
         super.init(router: router)
-        self.getScenarioForUsers()
     }
 }
 
@@ -72,30 +71,23 @@ extension AcuityReportViewModel {
 //MARK: Handle API Call
 extension AcuityReportViewModel {
     
-    private func getScenarioForUsers() {
+    func getScenarioForUsers() async  {
         
-        let scenarioTask = Task { [weak self] in
+        self.loadingState = .loading(title: "Fetching scenario.", message: "Please wait.")
+        
+        let model = AcuityIQReportDataModel.GetUserScenarioRequestModel()
+        
+        do {
+            self.scenarioResponseModel = try await ApiService.shared.requestGetHeader(type: [AcuityIQReportDataModel.Scenario].self, model: model)
             
-            guard let self else { return }
-            
-            self.loadingState = .loading(title: "Fetching scenario.", message: "Please wait.")
-            
-            let model = AcuityIQReportDataModel.GetUserScenarioRequestModel()
-            
-            do {
-                self.scenarioResponseModel = try await ApiService.shared.requestGetHeader(type: [AcuityIQReportDataModel.Scenario].self, model: model)
-                
-                self.loadingState = .loaded
-                self.emptyState = self.scenarioResponseModel.isEmpty ? .noData : .none
-            } catch {
-                Logger.shared.log(.error, message: "Error occure while calling api: \(model.path), ref: \(self)")
-                self.loadingState = .none
-                self.emptyState = .error
-            }
-            
-            
+            self.loadingState = .loaded
+            self.emptyState = self.scenarioResponseModel.isEmpty ? .noData : .none
+        } catch {
+            Logger.shared.log(.error, message: "Error occure while calling api: \(model.path), ref: \(self)")
+            self.loadingState = .none
+            self.emptyState = .error
         }
         
-        self.tasks.insert(TaskUtility.AnyCancellableTask(scenarioTask))
+        
     }
 }

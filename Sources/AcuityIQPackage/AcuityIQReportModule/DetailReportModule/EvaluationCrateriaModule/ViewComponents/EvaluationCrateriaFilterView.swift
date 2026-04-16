@@ -24,9 +24,8 @@ struct EvaluationCrateriaFilterView: View {
     // MARK: - Body
 
     var body: some View {
-        HStack {
+        VStack(spacing: 8) {
             searchField
-            Spacer()
             filterDropDown
         }
         .zIndex(2)
@@ -38,7 +37,9 @@ struct EvaluationCrateriaFilterView: View {
         SearchTextField(
             text: $parameter,
             placeholder: "Search Parameters...",
-            onChange: onSearchTextChange
+            onChange: onSearchTextChange,
+            font: .system(size: 14, weight: .medium),
+            height: 45
         )
     }
 
@@ -49,12 +50,10 @@ struct EvaluationCrateriaFilterView: View {
             dropDownOptions,
             placeholder: "Sort by",
             isSearchable: false,
-            controlHeight: 38,
-            font: .caption,
+            controlHeight: 45,
+            font: .system(size: 14, weight: .medium),
             onSelection: { onDropDownSelect($0) }
         )
-        .frame(width: 155)
-        .minimumScaleFactor(0.7)
     }
 }
 

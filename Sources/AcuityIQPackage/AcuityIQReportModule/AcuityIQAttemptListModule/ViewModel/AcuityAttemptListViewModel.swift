@@ -50,4 +50,15 @@ extension AcuityAttemptListViewModel {
         let navModel = NavigationViewModel.DetailReoportNavModel(scenarioID: navModel.scenarioID, secnarioAttempt: attempt)
         NavigationService.shared.navigate(using: router, to: AppNavigationDestination.detailReportView(navModel: navModel))
     }
+    
+    func onManagerEvalautionTap(_ attempt: AcuityIQReportDataModel.Scenario.Attempt) {
+        
+        guard let managerEvalauttion = attempt.managerEvaluation else {
+            toast = .init(style: .warning, message: "Manager Evaluation not found")
+            return
+        }
+        
+        let navModel = NavigationViewModel.ManagerEvaluationNavModel(managerEvaluation: managerEvalauttion)
+        NavigationService.shared.navigate(using: router, to: AppNavigationDestination.managerEvaluationView(navModel: navModel))
+    }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct AcuityAttemptItemView: View {
 
     let attempt: AcuityIQReportDataModel.Scenario.Attempt
+    var onManagerEvaluationTap: (AcuityIQReportDataModel.Scenario.Attempt) -> Void
     var onTap: (AcuityIQReportDataModel.Scenario.Attempt) -> Void
 
     var body: some View {
@@ -25,6 +26,8 @@ private extension AcuityAttemptItemView {
         HStack(spacing: 12) {
             userAvatarView
             userInfoSection
+            scoreBadge
+            managerEvalautionView
             chevronIndicator
         }
         .padding(.horizontal, 14)
@@ -41,16 +44,11 @@ private extension AcuityAttemptItemView {
     }
     
     var headerRow: some View {
-        HStack {
-            Text(attempt.userName ?? "Unknown")
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
-            
-            Spacer()
-            
-            scoreBadge
-        }
+        Text(attempt.userName ?? "Unknown")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundStyle(.primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     var detailsRow: some View {
@@ -75,6 +73,16 @@ private extension AcuityAttemptItemView {
             .font(.caption)
             .foregroundStyle(.secondary)
             .lineLimit(1)
+    }
+    
+    @ViewBuilder
+    var managerEvalautionView: some View {
+        if let managerEvaluation = attempt.managerEvaluation {
+            Image(systemName: "person.crop.circle.fill")
+                .foregroundStyle(.white, .blue)
+                .font(.system(size: 36))
+                .anyButton(.plain, action: { onManagerEvaluationTap(attempt)})
+        }
     }
     
     var chevronIndicator: some View {
@@ -145,8 +153,9 @@ private extension AcuityAttemptItemView {
                     userId: 9868,
                     userName: "LMS Admin",
                     score: 1.5,
-                    attemptDate: "Friday, April 3, 2026 3:22 PM"
+                    attemptDate: "Friday, April 3, 2026 3:22 PM", managerEvaluation: nil
                 ),
+                onManagerEvaluationTap: { _ in },
                 onTap: { _ in }
             )
 
@@ -157,8 +166,9 @@ private extension AcuityAttemptItemView {
                     userId: 9868,
                     userName: "John Smith",
                     score: 7.3,
-                    attemptDate: "Friday, April 3, 2026 2:55 PM"
+                    attemptDate: "Friday, April 3, 2026 2:55 PM", managerEvaluation: nil
                 ),
+                onManagerEvaluationTap: { _ in },
                 onTap: { _ in }
             )
 
@@ -169,8 +179,9 @@ private extension AcuityAttemptItemView {
                     userId: 9868,
                     userName: "Sarah Connor",
                     score: 4.5,
-                    attemptDate: "Friday, April 3, 2026 2:15 PM"
+                    attemptDate: "Friday, April 3, 2026 2:15 PM", managerEvaluation: nil
                 ),
+                onManagerEvaluationTap: { _ in },
                 onTap: { _ in }
             )
         }

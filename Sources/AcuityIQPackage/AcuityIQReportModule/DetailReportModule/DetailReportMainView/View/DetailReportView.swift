@@ -99,7 +99,7 @@ struct DetailReportView: View {
                     userId: 1,
                     userName: "Preview User",
                     score: 85.0,
-                    attemptDate: "2026-04-06"
+                    attemptDate: "2026-04-06", managerEvaluation: nil
                 )
             )
         )

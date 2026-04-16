@@ -274,7 +274,7 @@ extension  DetailReportDataModel {
         var color: Color {
             switch self {
             case .covered:
-                return ColorUtility.mintGreen
+                return ColorUtility.deepGreen
             case .notCovered:
                 return Color(hex: "#c34133")
             }

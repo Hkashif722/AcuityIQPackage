@@ -64,12 +64,126 @@ extension AcuityIQReportDataModel {
         struct Attempt: Codable, Identifiable {
             let attemptId: Int
             let attemptNumber: Int?
-            let userId: Int
+            let userId: Int?
             let userName: String?
             let score: Double?
             let attemptDate: String?
+            let managerEvaluation: ManagerEvaluation?
 
             var id: Int { attemptId }
+        }
+
+        struct ManagerEvaluation: Codable {
+            let id: Int?
+            let date: String?
+            let time: String?
+            let parameters: [ManagerEvaluationParameter]?
+
+            // MARK: - Computed
+
+            var totalScore: Double {
+                let scores = parameters?.compactMap { $0.score } ?? []
+                guard !scores.isEmpty else { return 0 }
+                return scores.reduce(0, +) / Double(scores.count)
+            }
+
+            var totalScoreFormatted: String {
+                "\(Int(totalScore.rounded()))/10"
+            }
+
+            var parameterCount: Int {
+                parameters?.count ?? 0
+            }
+
+            var scoredCount: Int {
+                parameters?.filter { ($0.score ?? 0) > 0 }.count ?? 0
+            }
+
+            var scoreLabel: ScoreLabel {
+                switch totalScore {
+                case 8...10: return .excellent
+                case 6..<8:  return .good
+                case 4..<6:  return .average
+                default:     return .needsImprovement
+                }
+            }
+
+            enum ScoreLabel: String {
+                case excellent        = "Excellent"
+                case good             = "Good"
+                case average          = "Average"
+                case needsImprovement = "Needs Improvement"
+                
+                var foregroundColor: Color {
+                    switch self {
+                    case .excellent:        return Color(red: 0.07, green: 0.62, blue: 0.46)
+                    case .good:             return Color(red: 0.24, green: 0.54, blue: 0.85)
+                    case .average:          return Color(red: 0.73, green: 0.47, blue: 0.0)
+                    case .needsImprovement: return Color(red: 0.89, green: 0.29, blue: 0.29)
+                    }
+                }
+                
+                var backgroundColor: Color {
+                    switch self {
+                    case .excellent:        return Color(red: 0.91, green: 0.95, blue: 0.87)
+                    case .good:             return Color(red: 0.90, green: 0.94, blue: 0.98)
+                    case .average:          return Color(red: 0.98, green: 0.94, blue: 0.86)
+                    case .needsImprovement: return Color(red: 0.99, green: 0.92, blue: 0.92)
+                    }
+                }
+                
+                var ringColor: Color {
+                    switch self {
+                    case .excellent:        return Color(red: 0.07, green: 0.62, blue: 0.46)
+                    case .good:             return Color(red: 0.24, green: 0.54, blue: 0.85)
+                    case .average:          return Color(red: 0.73, green: 0.47, blue: 0.0)
+                    case .needsImprovement: return Color(red: 0.89, green: 0.29, blue: 0.29)
+                    }
+                }
+            }
+        }
+
+        struct ManagerEvaluationParameter: Codable {
+            let parameter: String?
+            let score: Double?
+            let remarks: String?
+
+            // MARK: - Computed
+
+            var scoreFormatted: String {
+                "\(Int(score ?? 0))/20"
+            }
+
+            var progress: Double {
+                min((score ?? 0) / 20.0, 1.0)
+            }
+            
+            
+            var badgeForegroundColor: Color {
+                switch score ?? 0 {
+                case 15...20: return Color(red: 0.07, green: 0.62, blue: 0.46)
+                case 10..<15: return Color(red: 0.24, green: 0.54, blue: 0.85)
+                case 5..<10:  return Color(red: 0.73, green: 0.47, blue: 0.0)
+                default:      return Color(red: 0.89, green: 0.29, blue: 0.29)
+                }
+            }
+            
+            var badgeBackgroundColor: Color {
+                switch score ?? 0 {
+                case 15...20: return Color(red: 0.91, green: 0.95, blue: 0.87)
+                case 10..<15: return Color(red: 0.90, green: 0.94, blue: 0.98)
+                case 5..<10:  return Color(red: 0.98, green: 0.94, blue: 0.86)
+                default:      return Color(red: 0.99, green: 0.92, blue: 0.92)
+                }
+            }
+            
+            var progressBarColor: Color {
+                switch score ?? 0 {
+                case 15...20: return Color(red: 0.07, green: 0.62, blue: 0.46)
+                case 10..<15: return Color(red: 0.24, green: 0.54, blue: 0.85)
+                default:      return Color(red: 0.89, green: 0.29, blue: 0.29)
+                }
+            }
         }
         
         // MARK: - Custom Decoder
@@ -184,7 +298,7 @@ extension AcuityIQReportDataModel.Scenario {
             open: false,
             isManagerEvaluation: false,
             attempts: [
-                Attempt(attemptId: 577, attemptNumber: 1, userId: 9868, userName: "LMS Admin", score: 1.9, attemptDate: "Friday, April 3, 2026 6:10 PM")
+                Attempt(attemptId: 577, attemptNumber: 1, userId: 9868, userName: "LMS Admin", score: 1.9, attemptDate: "Friday, April 3, 2026 6:10 PM", managerEvaluation: nil)
             ],
             keywords: ["Multi_Language_Display_Check"],
             maximumAttempts: 20,
