@@ -62,168 +62,168 @@ extension DetailReportDataModel.ScenarioAttemptResponse {
 extension DetailReportDataModel.ScenarioAttemptResponse {
 
     enum ScoreLevel: String, CaseIterable {
-        case poor         = "Poor"
-        case belowAverage = "Below Avg"
-        case average      = "Average"
-        case good         = "Good"
-        case excellent    = "Excellent"
+        case poor      = "Poor"
+        case moderate  = "Moderate"
+        case excellent = "Excellent"
 
-        // MARK: Gauge
+        // MARK: - Gauge
 
         var color: Color {
             switch self {
-            case .poor:         return .red
-            case .belowAverage: return .orange
-            case .average:      return .blue
-            case .good:         return .cyan
-            case .excellent:    return .green
+            case .poor:      return Color(hex: "#dc2626")
+            case .moderate:  return Color(hex: "#f59e0b")
+            case .excellent: return Color(hex: "#10b981")
             }
         }
 
+        /// Normalised midpoint position on the gauge arc (0.0 – 1.0)
         var location: Double {
             switch self {
-            case .poor:         return 0.0
-            case .belowAverage: return 0.25
-            case .average:      return 0.5
-            case .good:         return 0.75
-            case .excellent:    return 1.0
+            case .poor:      return 0.175  // midpoint of 0.00–0.35
+            case .moderate:  return 0.55   // midpoint of 0.35–0.75
+            case .excellent: return 0.875  // midpoint of 0.75–1.00
             }
         }
 
-        // MARK: Header
+        // MARK: - Header
 
         var title: String {
             switch self {
-            case .poor:         return "Poor Performance"
-            case .belowAverage: return "Below Average Performance"
-            case .average:      return "Average Performance"
-            case .good:         return "Good Performance"
-            case .excellent:    return "Excellent Performance"
+            case .poor:      return "Poor Performance"
+            case .moderate:  return "Moderate Performance"
+            case .excellent: return "Excellent Performance"
             }
         }
 
         var icon: String {
             switch self {
-            case .poor:         return "xmark.circle.fill"
-            case .belowAverage: return "exclamationmark.triangle.fill"
-            case .average:      return "minus.circle.fill"
-            case .good:         return "hand.thumbsup.fill"
-            case .excellent:    return "star.circle.fill"
+            case .poor:      return "exclamationmark.triangle.fill"
+            case .moderate:  return "info.circle.fill"
+            case .excellent: return "checkmark.circle.fill"
             }
         }
 
-        var iconColor: Color {
-            switch self {
-            case .poor:         return .red
-            case .belowAverage: return .orange
-            case .average:      return .blue
-            case .good:         return .cyan
-            case .excellent:    return .green
-            }
-        }
+        var iconColor: Color { color }
 
-        // MARK: Alert Card
+        // MARK: - Alert Card
 
         var alertTitle: String {
             switch self {
-            case .poor:         return "Poor Score"
-            case .belowAverage: return "Below Average Score"
-            case .average:      return "Average Score"
-            case .good:         return "Good Score"
-            case .excellent:    return "Excellent Score"
+            case .poor:      return "Low Integrity Score"
+            case .moderate:  return "Moderate Integrity Score"
+            case .excellent: return "Excellent Integrity Score"
             }
         }
 
         var alertIcon: String {
             switch self {
-            case .poor:         return "xmark.circle.fill"
-            case .belowAverage: return "exclamationmark.triangle.fill"
-            case .average:      return "minus.circle.fill"
-            case .good:         return "hand.thumbsup.fill"
-            case .excellent:    return "checkmark.circle.fill"
+            case .poor:      return "exclamationmark.triangle.fill"  // fa-exclamation-triangle
+            case .moderate:  return "info.circle.fill"               // fa-info-circle
+            case .excellent: return "checkmark.circle.fill"          // fa-check-circle
             }
         }
 
-        var alertIconColor: Color {
-            switch self {
-            case .poor:         return .red
-            case .belowAverage: return .yellow
-            case .average:      return .blue
-            case .good:         return .cyan
-            case .excellent:    return .green
-            }
-        }
+        var alertIconColor: Color { color }
 
         var trailingIcon: String {
             switch self {
-            case .poor:         return "exclamationmark.circle.fill"
-            case .belowAverage: return "exclamationmark.circle"
-            case .average:      return "minus.circle"
-            case .good:         return "checkmark.circle"
-            case .excellent:    return "checkmark.circle.fill"
+            case .poor:      return "exclamationmark.circle.fill"
+            case .moderate:  return "minus.circle"
+            case .excellent: return "checkmark.circle.fill"
             }
         }
 
-        // MARK: Descriptive Text
+        // MARK: - Descriptive Text
 
         var subtitle: String {
             switch self {
             case .poor:
-                return "Performance is significantly below expectations and requires immediate attention."
-            case .belowAverage:
-                return "Performance is below the expected standard with notable areas needing improvement."
-            case .average:
-                return "Performance meets the basic standard but has clear room for growth."
-            case .good:
-                return "Performance is above average with only minor areas left to refine."
+                return "— This score is based on how consistently and naturally eye contact is maintained during the interaction."
+            case .moderate:
+                return "— This score is based on how consistently and naturally eye contact is maintained during the interaction."
             case .excellent:
-                return "Performance exceeds expectations across all evaluated parameters."
+                return "— This score is based on how consistently and naturally eye contact is maintained during the interaction."
             }
         }
 
         var alertMessage: String {
             switch self {
             case .poor:
-                return "Critical gaps detected. Immediate intervention and focused practice are strongly recommended."
-            case .belowAverage:
-                return "Several areas require improvement. Consistent practice and targeted feedback will help raise performance."
-            case .average:
-                return "A reasonable baseline has been established. Continued effort and refinement will lead to stronger results."
-            case .good:
-                return "Strong performance overall. Minor adjustments could elevate this to an excellent level."
+                return "Inconsistent eye contact suggests compromised response integrity and reduced confidence. This may indicate distraction, lack of preparation, or potential reliance on external sources."
+            case .moderate:
+                return "Eye contact was maintained at an acceptable level but showed some inconsistency. There is room for improvement in maintaining steady focus and engagement throughout the interaction."
             case .excellent:
-                return "Outstanding performance. Maintain this standard and serve as a benchmark for peers."
+                return "Consistent and natural eye contact was maintained throughout the interaction. This reflects strong confidence, honesty, and genuine engagement with the content."
+            }
+        }
+
+        // MARK: - Background & Border Colors (matches web card styles)
+
+        var backgroundColor: Color {
+            switch self {
+            case .poor:      return Color(hex: "#fef2f2")  // red-50
+            case .moderate:  return Color(hex: "#fffbeb")  // amber-50
+            case .excellent: return Color(hex: "#ecfdf5")  // green-50
+            }
+        }
+
+        var borderColor: Color {
+            switch self {
+            case .poor:      return Color(hex: "#dc2626")  // red-600
+            case .moderate:  return Color(hex: "#f59e0b")  // amber-400
+            case .excellent: return Color(hex: "#10b981")  // green-500
+            }
+        }
+
+        // Title / icon color (matches web label color)
+        var titleColor: Color {
+            switch self {
+            case .poor:      return Color(hex: "#dc2626")  // red-600
+            case .moderate:  return Color(hex: "#b45309")  // amber-700
+            case .excellent: return Color(hex: "#059669")  // green-600
+            }
+        }
+
+        // Body message color (darker shade, matches web message text)
+        var messageColor: Color {
+            switch self {
+            case .poor:      return Color(hex: "#991b1b")  // red-800
+            case .moderate:  return Color(hex: "#92400e")  // amber-800  ← screenshot
+            case .excellent: return Color(hex: "#047857")  // green-800
             }
         }
     }
-    
+
+    // MARK: - Score Classification
+    // Exactly mirrors web thresholds:
+    //   Poor     → confidenceScore < 0.35
+    //   Moderate → confidenceScore >= 0.35 && <= 0.75
+    //   Excellent → confidenceScore > 0.75
+    // overallScore is on a 0–10 scale → normalise by dividing by 10
     var scoreLevel: ScoreLevel {
-        let score = overallScore ?? 0
-        let normalized = score > 5 ? score / 2 : score  // matches overallScoreModel logic
-        switch normalized {
-        case 0..<1:   return .poor
-        case 1..<2:   return .belowAverage
-        case 2..<3:   return .average
-        case 3..<4:   return .good
-        default:      return .excellent
+        let normalised = confidenceScore ?? 0
+        switch normalised {
+        case ..<0.35:      return .poor
+        case 0.35...0.75:  return .moderate
+        default:           return .excellent
         }
     }
-    
+
+    // MARK: - Gauge Model
+
     struct OverallScoreModel {
         let value: Double
         let range: ClosedRange<Double>
         let segments: [GaugeSegment]
-        
+
         var normalizedValue: Double {
             min(max(value, range.lowerBound), range.upperBound)
         }
     }
 
     var overallScoreModel: OverallScoreModel {
-        let score = overallScore ?? 0
-        
-        return OverallScoreModel(
-            value: score,
+        OverallScoreModel(
+            value: overallScore ?? 0,
             range: 0...10,
             segments: .defaultSegments()
         )

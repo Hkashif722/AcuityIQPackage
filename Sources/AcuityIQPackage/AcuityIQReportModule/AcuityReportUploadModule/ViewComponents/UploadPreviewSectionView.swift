@@ -42,7 +42,8 @@ struct UploadPreviewSectionView: View {
     UploadPreviewSectionView(
         attemptExausted: false,
         items: AcuityReportUploadDataModel.previewItems(
-            refVideo: nil,
+            knowledgeURL: nil,
+            refVideoURL: nil,
             onProductKnowledge: { print("Product Knowledge") },
             onReferenceVideo: { print("Reference Video") }
         )

@@ -57,16 +57,21 @@ extension AcuityReportUploadDataModel {
     }
 
     static func previewItems(
-        refVideo: String?,
+        knowledgeURL: String?,
+        refVideoURL: String?,
         onProductKnowledge: @escaping () -> Void,
         onReferenceVideo: @escaping () -> Void
     ) -> [PreviewItem] {
-        var model: [PreviewItem] = [PreviewItem(icon: "doc.text.fill", title: "Product Knowledge", action: onProductKnowledge)]
-        
-        if let refVideo, !refVideo.isEmpty {
-            model.append( PreviewItem(icon: "play.circle.fill", title: "Reference Video", action: onReferenceVideo))
+        var model: [PreviewItem] = []
+
+        if let knowledgeURL, !knowledgeURL.isEmpty {
+            model.append(PreviewItem(icon: "doc.text.fill", title: "Product Knowledge", action: onProductKnowledge))
         }
-        
+
+        if let refVideoURL, !refVideoURL.isEmpty {
+            model.append(PreviewItem(icon: "play.circle.fill", title: "Reference Video", action: onReferenceVideo))
+        }
+
         return model
     }
 }
@@ -295,10 +300,20 @@ extension AcuityReportUploadDataModel {
             AcuityIQAPIManager.shared.isUAT ? videoPath.appending(EnvironmentVariable.SAS_TOKEN) : videoPath
         }
         
+        var resolvedEvaluationParameters: [AcuityIQReportDataModel.Scenario.EvaluationParameter]? {
+            scenario.evaluationParameters?.map {
+                AcuityIQReportDataModel.Scenario.EvaluationParameter(
+                    name: $0.name,
+                    description: $0.description ?? "",
+                    weightage: $0.weightage
+                )
+            }
+        }
+        
         var getPayload: ScenarioPayload {
             ScenarioPayload(
                 mediaURL: computedVideoPath,
-                parameters: scenario.evaluationParameters,
+                parameters: resolvedEvaluationParameters,
                 knowledgeURL: getFullKnowledgePath,
                 description: scenario.scenarioDescription,
                 referenceVideo: getRefrenceVidepPath,
@@ -714,6 +729,52 @@ extension AcuityReportUploadDataModel {
 
         var headers: [String : String]? { nil }
     }
+}
+
+// MARK: ContentCompletion Status Mark
+extension AcuityReportUploadDataModel {
+
+    struct ContentCompletionStatusRequestModel: EndpointModel {
+
+        struct CourseModuleStatus: Encodable {
+            let courseId: Int
+            let moduleId: Int
+            let status: String
+        }
+
+        let payload: CourseModuleStatus
+
+        init(courseId: Int, moduleId: Int, status: String) {
+            self.payload = CourseModuleStatus(
+                courseId: courseId,
+                moduleId: moduleId,
+                status: status
+            )
+        }
+
+        var path: String {
+            [
+                APIConst.courseBaseUrl,
+                APIConst.versionAPI,
+                APIConst.ContentCompletionStatus
+            ].joined(separator: "/")
+        }
+
+        var method: NetworkService.HTTPMethod { .post }
+
+        var headers: [String: String]? { nil }
+    }
+    
+    struct ModuleAttemptResponseModel: Decodable {
+        let id: Int
+        let moduleId: Int
+        let courseId: Int
+        let status: String
+        let location: String?
+        let groupId: Int?
+        let isUserConsent: Bool?
+    }
+
 }
 
 // MARK: - Preview Data

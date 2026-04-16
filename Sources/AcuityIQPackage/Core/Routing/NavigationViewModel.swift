@@ -25,15 +25,17 @@ extension NavigationViewModel {
         let isFromModule: Bool
         let projectID: Int? // Correspond to scenarioId
         let moduleId: Int?
+        let moduleStatus: String?
         let courseId: Int?
         let attempt: (total: Int?, left: Int?)?
         let moduleAttempts: [[String: Any]]?
 
-        init(scenarioModel: AcuityIQReportDataModel.Scenario, isFromModule: Bool = false, projectID: Int? = nil, moduleId: Int? = nil, courseId: Int? = nil, attempt: (total: Int?, left: Int?)? = nil, moduleAttempts: [[String: Any]]? = nil ) {
+        init(scenarioModel: AcuityIQReportDataModel.Scenario, isFromModule: Bool = false, projectID: Int? = nil, moduleId: Int? = nil, moduleStatus: String? = nil, courseId: Int? = nil, attempt: (total: Int?, left: Int?)? = nil, moduleAttempts: [[String: Any]]? = nil ) {
             self.scenarioModel = scenarioModel
             self.isFromModule = isFromModule
             self.projectID = projectID
             self.moduleId = moduleId
+            self.moduleStatus = moduleStatus
             self.courseId = courseId
             self.attempt = attempt
             self.moduleAttempts = moduleAttempts

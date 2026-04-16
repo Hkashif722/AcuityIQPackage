@@ -37,5 +37,6 @@ internal struct APIConst {
     static let Post_Usage = "c/AIData/PostUsage"
     static let PostAnalysis = "c/AIScenario/PostAnalysis"
     static let MarkModuleAttempt = "MyCourses/MarkModuleAttempt"
+    static let ContentCompletionStatus = "ContentCompletionStatus"
 
 }

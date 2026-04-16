@@ -80,7 +80,8 @@ extension AcuityReportUploadView {
         UploadPreviewSectionView(
             attemptExausted: viewModel.isAttemptExausted,
             items: AcuityReportUploadDataModel.previewItems(
-                refVideo: viewModel.navModel.scenarioModel.referenceVideo,
+                knowledgeURL: viewModel.navModel.scenarioModel.knowledgeDocument,
+                refVideoURL: viewModel.navModel.scenarioModel.referenceVideo,
                 onProductKnowledge: viewModel.didTapProductKnowledge,
                 onReferenceVideo: viewModel.didTapReferenceVideo
             )

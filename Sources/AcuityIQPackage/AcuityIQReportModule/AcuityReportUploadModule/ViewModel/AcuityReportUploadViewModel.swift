@@ -54,6 +54,7 @@ class AcuityReportUploadViewModel: RoutableViewModel {
         _totalAttempts = .init(initialValue: navModel.attempt?.total ?? navModel.scenarioModel.pendingAttempts ?? 0)
         _attemptRemaining = .init(initialValue: navModel.attempt?.left ?? navModel.scenarioModel.pendingAttempts ?? 0)
         super.init(router: router)
+        self.callModuleAttempt()
     }
 }
 
@@ -293,7 +294,7 @@ extension AcuityReportUploadViewModel {
             do {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     group.addTask { [weak self] in
-                        try await self?.postProctoringData(videoPath: videoPath)
+                        try? await self?.postProctoringData(videoPath: videoPath)
                     }
                     group.addTask { [weak self] in
                         try await self?.postVideoParameters(videoPath: videoPath)
@@ -544,5 +545,44 @@ extension AcuityReportUploadViewModel {
             }
         }
     }
+    
+    // MARK: Mark Module Attempt
 
+    private func callModuleAttempt() {
+        
+        guard let moduleStatus = navModel.moduleStatus, moduleStatus.lowercased() == "incompleted" else {
+            Logger.shared.log(.info, message: "Skipping module attempt — status is already in progress or completed (status: \(navModel.moduleStatus ?? "nil"))")
+            return
+        }
+
+        Logger.shared.log(.info, message: "Module status is incompleted — proceeding to mark attempt (status: \(moduleStatus))")
+
+        Task { [weak self] in
+            
+            guard let self = self, let courseID = self.navModel.courseId, let moduleID = self.navModel.moduleId else {
+                Logger.shared.log(.warning, message: "Aborting module attempt — missing required IDs (courseId: \(String(describing: self?.navModel.courseId)), moduleId: \(String(describing: self?.navModel.moduleId)))")
+                return
+            }
+
+            Logger.shared.log(.info, message: "Encrypting status payload for moduleId: \(moduleID), courseId: \(courseID)")
+            
+            let moduleStatus = String(courseID).appending("inprogress")
+            let encryptedModuleStatus = EncryptDecryptUtility.shared.newEncryptValueString(valueStr: moduleStatus)
+
+            let model = AcuityReportUploadDataModel.ContentCompletionStatusRequestModel(
+                courseId: courseID,
+                moduleId: moduleID,
+                status: encryptedModuleStatus
+            )
+
+            Logger.shared.log(.info, message: "Calling module attempt API — moduleId: \(moduleID), courseId: \(courseID)")
+
+            do {
+                let _ = try await ApiService.shared.requestPostHeader(type:AcuityReportUploadDataModel.ModuleAttemptResponseModel.self, model: model, payload: model.payload)
+                Logger.shared.log(.info, message: "Module attempt marked successfully — moduleId: \(moduleID), courseId: \(courseID)")
+            } catch {
+                Logger.shared.log(.error, message: "Failed to mark module attempt — moduleId: \(moduleID), courseId: \(courseID), error: \(error.localizedDescription)")
+            }
+        }
+    }
 }

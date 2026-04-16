@@ -26,7 +26,7 @@ struct ManagerEvaluationScoreCardView: View {
             Spacer()
         }
         .padding(20)
-        .background(Color(red: 0.97, green: 0.94, blue: 0.99))
+        .background(evaluation.scoreLabel.backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
@@ -35,7 +35,10 @@ struct ManagerEvaluationScoreCardView: View {
     private var scoreRingView: some View {
         ZStack {
             Circle()
-                .stroke(Color(red: 0.91, green: 0.88, blue: 0.95), lineWidth: 6)
+                .stroke(
+                    evaluation.scoreLabel.borderColor.opacity(0.2),  // ← was: Color(red: 0.91, ...)
+                    lineWidth: 6
+                )
                 .frame(width: 80, height: 80)
 
             Circle()
@@ -75,7 +78,7 @@ struct ManagerEvaluationScoreCardView: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(evaluation.scoredCount)")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(Color(red: 0.07, green: 0.62, blue: 0.46))
+                    .foregroundColor(evaluation.scoreLabel.foregroundColor)  // ← was: Color(red: 0.07, ...)
                 Text("Scored")
                     .font(.system(size: 14))
                     .foregroundColor(.secondary)

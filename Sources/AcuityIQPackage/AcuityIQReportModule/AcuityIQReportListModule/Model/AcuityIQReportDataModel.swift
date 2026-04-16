@@ -73,6 +73,8 @@ extension AcuityIQReportDataModel {
             var id: Int { attemptId }
         }
 
+        // MARK: - ManagerEvaluation
+
         struct ManagerEvaluation: Codable {
             let id: Int?
             let date: String?
@@ -99,93 +101,103 @@ extension AcuityIQReportDataModel {
                 parameters?.filter { ($0.score ?? 0) > 0 }.count ?? 0
             }
 
+            // Mirrors web:
+            //   mgr-chip-good → >= 8
+            //   mgr-chip-avg  → >= 5 && < 8
+            //   mgr-chip-low  → < 5
             var scoreLabel: ScoreLabel {
                 switch totalScore {
-                case 8...10: return .excellent
-                case 6..<8:  return .good
-                case 4..<6:  return .average
-                default:     return .needsImprovement
+                case 8...10: return .good
+                case 5..<8:  return .average
+                default:     return .low
                 }
             }
 
+            // MARK: - ScoreLabel
+
             enum ScoreLabel: String {
-                case excellent        = "Excellent"
-                case good             = "Good"
-                case average          = "Average"
-                case needsImprovement = "Needs Improvement"
-                
+                case good    = "Good"
+                case average = "Average"
+                case low     = "Low"
+
+                /// Text / number color — badge label, score ring number, scored count
                 var foregroundColor: Color {
                     switch self {
-                    case .excellent:        return Color(red: 0.07, green: 0.62, blue: 0.46)
-                    case .good:             return Color(red: 0.24, green: 0.54, blue: 0.85)
-                    case .average:          return Color(red: 0.73, green: 0.47, blue: 0.0)
-                    case .needsImprovement: return Color(red: 0.89, green: 0.29, blue: 0.29)
+                    case .good:    return Color(hex: "#059669")  // green-700  — mgr-chip-good
+                    case .average: return Color(hex: "#b45309")  // amber-700  — mgr-chip-avg
+                    case .low:     return Color(hex: "#dc2626")  // red-600    — mgr-chip-low
                     }
                 }
-                
+
+                /// Soft tinted fill — card background, badge background
                 var backgroundColor: Color {
                     switch self {
-                    case .excellent:        return Color(red: 0.91, green: 0.95, blue: 0.87)
-                    case .good:             return Color(red: 0.90, green: 0.94, blue: 0.98)
-                    case .average:          return Color(red: 0.98, green: 0.94, blue: 0.86)
-                    case .needsImprovement: return Color(red: 0.99, green: 0.92, blue: 0.92)
+                    case .good:    return Color(hex: "#ecfdf5")  // green-50
+                    case .average: return Color(hex: "#fffbeb")  // amber-50
+                    case .low:     return Color(hex: "#fef2f2")  // red-50
                     }
                 }
-                
-                var ringColor: Color {
+
+                /// Vivid stroke — ring progress, border, progress bar fill
+                var borderColor: Color {
                     switch self {
-                    case .excellent:        return Color(red: 0.07, green: 0.62, blue: 0.46)
-                    case .good:             return Color(red: 0.24, green: 0.54, blue: 0.85)
-                    case .average:          return Color(red: 0.73, green: 0.47, blue: 0.0)
-                    case .needsImprovement: return Color(red: 0.89, green: 0.29, blue: 0.29)
+                    case .good:    return Color(hex: "#10b981")  // green-500
+                    case .average: return Color(hex: "#f59e0b")  // amber-400
+                    case .low:     return Color(hex: "#dc2626")  // red-600
                     }
                 }
+
+                var ringColor: Color { borderColor }
+
+                var icon: String { "person.circle" }  // fa-user-circle-o
             }
         }
+
+        // MARK: - ManagerEvaluationParameter
 
         struct ManagerEvaluationParameter: Codable {
             let parameter: String?
             let score: Double?
             let remarks: String?
-
+            
             // MARK: - Computed
-
+            
             var scoreFormatted: String {
                 "\(Int(score ?? 0))/20"
             }
-
+            
             var progress: Double {
                 min((score ?? 0) / 20.0, 1.0)
             }
             
+            // Mirrors web mgr-chip thresholds, scaled to /20:
+            //   good    → >= 16  (= 8/10 × 2)
+            //   average → >= 10  (= 5/10 × 2)
+            //   low     → <  10
+            private var scoreLabel: ManagerEvaluation.ScoreLabel {
+                switch score ?? 0 {
+                case 16...20: return .good
+                case 10..<16: return .average
+                default:      return .low
+                }
+            }
             
+            /// Text + number color inside score badge
             var badgeForegroundColor: Color {
-                switch score ?? 0 {
-                case 15...20: return Color(red: 0.07, green: 0.62, blue: 0.46)
-                case 10..<15: return Color(red: 0.24, green: 0.54, blue: 0.85)
-                case 5..<10:  return Color(red: 0.73, green: 0.47, blue: 0.0)
-                default:      return Color(red: 0.89, green: 0.29, blue: 0.29)
-                }
+                scoreLabel.foregroundColor
             }
             
+            /// Soft tinted fill — score badge background + card border tint
             var badgeBackgroundColor: Color {
-                switch score ?? 0 {
-                case 15...20: return Color(red: 0.91, green: 0.95, blue: 0.87)
-                case 10..<15: return Color(red: 0.90, green: 0.94, blue: 0.98)
-                case 5..<10:  return Color(red: 0.98, green: 0.94, blue: 0.86)
-                default:      return Color(red: 0.99, green: 0.92, blue: 0.92)
-                }
+                scoreLabel.backgroundColor
             }
             
+            /// Vivid progress bar fill — uses borderColor (saturated token)
+            /// matches web: amber bar for avg, red bar for low, green bar for good
             var progressBarColor: Color {
-                switch score ?? 0 {
-                case 15...20: return Color(red: 0.07, green: 0.62, blue: 0.46)
-                case 10..<15: return Color(red: 0.24, green: 0.54, blue: 0.85)
-                default:      return Color(red: 0.89, green: 0.29, blue: 0.29)
-                }
+                scoreLabel.borderColor
             }
         }
-        
         // MARK: - Custom Decoder
         
         private enum CodingKeys: String, CodingKey {

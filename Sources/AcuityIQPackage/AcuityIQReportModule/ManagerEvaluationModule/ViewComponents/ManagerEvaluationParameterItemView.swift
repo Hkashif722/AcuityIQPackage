@@ -43,11 +43,11 @@ struct ManagerEvaluationParameterItemView: View {
     private var indexBadge: some View {
         ZStack {
             Circle()
-                .fill(Color(red: 0.92, green: 0.90, blue: 0.97))
+                .fill(parameter.badgeBackgroundColor)
                 .frame(width: 26, height: 26)
             Text("\(index)")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(Color(red: 0.33, green: 0.29, blue: 0.72))
+                .foregroundColor(parameter.badgeForegroundColor)
         }
     }
 

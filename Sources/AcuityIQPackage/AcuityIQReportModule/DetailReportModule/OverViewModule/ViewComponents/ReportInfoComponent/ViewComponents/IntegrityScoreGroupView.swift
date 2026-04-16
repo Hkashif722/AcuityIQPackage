@@ -25,7 +25,7 @@ struct IntegrityScoreGroupView: View {
     private var contentView: some View {
         VStack(alignment: .leading, spacing: 12) {
 
-            Text("— \(level.subtitle)")
+            Text(level.subtitle)
                 .font(.subheadline)
                 .italic()
                 .foregroundStyle(.secondary)
@@ -41,15 +41,15 @@ struct IntegrityScoreGroupView: View {
                         Text(level.alertTitle)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(level.color)
+                            .foregroundStyle(level.titleColor)
                     } icon: {
                         Image(systemName: level.alertIcon)
-                            .foregroundStyle(level.alertIconColor)
+                            .foregroundStyle(level.titleColor)
                     }
 
                     Text(level.alertMessage)
                         .font(.subheadline)
-                        .foregroundStyle(level.color.opacity(0.85))
+                        .foregroundStyle(level.titleColor)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(12)

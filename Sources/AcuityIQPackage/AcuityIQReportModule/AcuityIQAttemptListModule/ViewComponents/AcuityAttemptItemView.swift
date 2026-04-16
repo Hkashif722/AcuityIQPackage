@@ -79,9 +79,13 @@ private extension AcuityAttemptItemView {
     var managerEvalautionView: some View {
         if let managerEvaluation = attempt.managerEvaluation {
             Image(systemName: "person.crop.circle.fill")
-                .foregroundStyle(.white, .blue)
+                .foregroundStyle(managerEvaluation.scoreLabel.foregroundColor, managerEvaluation.scoreLabel.backgroundColor)
                 .font(.system(size: 36))
-                .anyButton(.plain, action: { onManagerEvaluationTap(attempt)})
+                .overlay(
+                    Circle()
+                        .stroke(managerEvaluation.scoreLabel.ringColor, lineWidth: 2)
+                )
+                .anyButton(.plain, action: { onManagerEvaluationTap(attempt) })
         }
     }
     
@@ -137,9 +141,10 @@ private extension AcuityAttemptItemView {
 
     var scoreColor: Color {
         guard let score = attempt.score else { return .gray }
-        if score >= 7 { return .green }
-        if score >= 4 { return .orange }
-        return .orange
+        switch score {
+        case 8...:  return Color(hex: "#10b981")  // good  → score >= 8
+        default:    return Color(hex: "#f59e0b")  // avg   → score < 8
+        }
     }
 }
 

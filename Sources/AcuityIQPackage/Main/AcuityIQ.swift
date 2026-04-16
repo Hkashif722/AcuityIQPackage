@@ -156,6 +156,7 @@ public final class AcuityIQ {
         from viewController: UIViewController,
         projectID: Int,
         moduleId: Int? = nil,
+        moduleStatus: String? = nil,
         courseId: Int? = nil,
         attempt: (total: Int?, left: Int?)?,
         moduleAttempts: [[String: Any]]?,
@@ -187,6 +188,7 @@ public final class AcuityIQ {
                     isFromModule: true,
                     projectID: projectID,
                     moduleId: moduleId,
+                    moduleStatus: moduleStatus,
                     courseId: courseId,
                     attempt: attempt,
                     moduleAttempts: moduleAttempts
