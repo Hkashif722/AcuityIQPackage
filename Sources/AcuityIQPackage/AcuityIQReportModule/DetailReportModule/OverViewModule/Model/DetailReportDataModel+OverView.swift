@@ -62,6 +62,73 @@ extension DetailReportDataModel.ScenarioAttemptResponse {
 extension DetailReportDataModel.ScenarioAttemptResponse {
 
     enum ScoreLevel: String, CaseIterable {
+        case poor         = "Poor"
+        case belowAverage = "Below Avg"
+        case average      = "Average"
+        case good         = "Good"
+        case excellent    = "Excellent"
+
+        // MARK: Gauge
+
+        var color: Color {
+            switch self {
+            case .poor:         return .red
+            case .belowAverage: return .orange
+            case .average:      return .blue
+            case .good:         return .cyan
+            case .excellent:    return .green
+            }
+        }
+
+        var location: Double {
+            switch self {
+            case .poor:         return 0.0
+            case .belowAverage: return 0.25
+            case .average:      return 0.5
+            case .good:         return 0.75
+            case .excellent:    return 1.0
+            }
+        }
+    }
+    
+    var scoreLevel: ScoreLevel {
+        let score = overallScore ?? 0
+        let normalized = score > 5 ? score / 2 : score  // matches overallScoreModel logic
+        switch normalized {
+        case 0..<1:   return .poor
+        case 1..<2:   return .belowAverage
+        case 2..<3:   return .average
+        case 3..<4:   return .good
+        default:      return .excellent
+        }
+    }
+    
+    struct OverallScoreModel {
+        let value: Double
+        let range: ClosedRange<Double>
+        let segments: [GaugeSegment]
+        
+        var normalizedValue: Double {
+            min(max(value, range.lowerBound), range.upperBound)
+        }
+    }
+
+    var overallScoreModel: OverallScoreModel {
+        let score = overallScore ?? 0
+        
+        return OverallScoreModel(
+            value: score,
+            range: 0...10,
+            segments: .defaultSegments()
+        )
+    }
+    
+}
+
+// MARK: - ConfidenceLevel & Model
+extension DetailReportDataModel.ScenarioAttemptResponse {
+
+    enum ConfidenceLevel: String, CaseIterable {
         case poor      = "Poor"
         case moderate  = "Moderate"
         case excellent = "Excellent"
@@ -79,20 +146,16 @@ extension DetailReportDataModel.ScenarioAttemptResponse {
         /// Normalised midpoint position on the gauge arc (0.0 – 1.0)
         var location: Double {
             switch self {
-            case .poor:      return 0.175  // midpoint of 0.00–0.35
-            case .moderate:  return 0.55   // midpoint of 0.35–0.75
-            case .excellent: return 0.875  // midpoint of 0.75–1.00
+            case .poor:      return 0.175
+            case .moderate:  return 0.55
+            case .excellent: return 0.875
             }
         }
 
         // MARK: - Header
 
         var title: String {
-            switch self {
-            case .poor:      return "Poor Performance"
-            case .moderate:  return "Moderate Performance"
-            case .excellent: return "Excellent Performance"
-            }
+            "Integrity Score"
         }
 
         var icon: String {
@@ -109,17 +172,17 @@ extension DetailReportDataModel.ScenarioAttemptResponse {
 
         var alertTitle: String {
             switch self {
-            case .poor:      return "Low Integrity Score"
-            case .moderate:  return "Moderate Integrity Score"
-            case .excellent: return "Excellent Integrity Score"
+            case .poor:      return "Low Confidence Score"
+            case .moderate:  return "Moderate Confidence Score"
+            case .excellent: return "Excellent Confidence Score"
             }
         }
 
         var alertIcon: String {
             switch self {
-            case .poor:      return "exclamationmark.triangle.fill"  // fa-exclamation-triangle
-            case .moderate:  return "info.circle.fill"               // fa-info-circle
-            case .excellent: return "checkmark.circle.fill"          // fa-check-circle
+            case .poor:      return "exclamationmark.triangle.fill"
+            case .moderate:  return "info.circle.fill"
+            case .excellent: return "checkmark.circle.fill"
             }
         }
 
@@ -136,101 +199,68 @@ extension DetailReportDataModel.ScenarioAttemptResponse {
         // MARK: - Descriptive Text
 
         var subtitle: String {
-            switch self {
-            case .poor:
-                return "— This score is based on how consistently and naturally eye contact is maintained during the interaction."
-            case .moderate:
-                return "— This score is based on how consistently and naturally eye contact is maintained during the interaction."
-            case .excellent:
-                return "— This score is based on how consistently and naturally eye contact is maintained during the interaction."
-            }
+            return "— This score reflects the level of confidence demonstrated during the interaction."
         }
 
         var alertMessage: String {
             switch self {
             case .poor:
-                return "Inconsistent eye contact suggests compromised response integrity and reduced confidence. This may indicate distraction, lack of preparation, or potential reliance on external sources."
+                return "Low confidence was detected during the interaction. This may indicate nervousness, lack of preparation, or uncertainty in the subject matter."
             case .moderate:
-                return "Eye contact was maintained at an acceptable level but showed some inconsistency. There is room for improvement in maintaining steady focus and engagement throughout the interaction."
+                return "Confidence was present at an acceptable level but showed some inconsistency. There is room for improvement in maintaining a steady and assured delivery throughout."
             case .excellent:
-                return "Consistent and natural eye contact was maintained throughout the interaction. This reflects strong confidence, honesty, and genuine engagement with the content."
+                return "Strong and consistent confidence was demonstrated throughout the interaction. This reflects thorough preparation, subject mastery, and clear communication."
             }
         }
 
-        // MARK: - Background & Border Colors (matches web card styles)
+        // MARK: - Background & Border Colors
 
         var backgroundColor: Color {
             switch self {
-            case .poor:      return Color(hex: "#fef2f2")  // red-50
-            case .moderate:  return Color(hex: "#fffbeb")  // amber-50
-            case .excellent: return Color(hex: "#ecfdf5")  // green-50
+            case .poor:      return Color(hex: "#fef2f2")
+            case .moderate:  return Color(hex: "#fffbeb")
+            case .excellent: return Color(hex: "#ecfdf5")
             }
         }
 
         var borderColor: Color {
             switch self {
-            case .poor:      return Color(hex: "#dc2626")  // red-600
-            case .moderate:  return Color(hex: "#f59e0b")  // amber-400
-            case .excellent: return Color(hex: "#10b981")  // green-500
+            case .poor:      return Color(hex: "#dc2626")
+            case .moderate:  return Color(hex: "#f59e0b")
+            case .excellent: return Color(hex: "#10b981")
             }
         }
 
-        // Title / icon color (matches web label color)
         var titleColor: Color {
             switch self {
-            case .poor:      return Color(hex: "#dc2626")  // red-600
-            case .moderate:  return Color(hex: "#b45309")  // amber-700
-            case .excellent: return Color(hex: "#059669")  // green-600
+            case .poor:      return Color(hex: "#dc2626")
+            case .moderate:  return Color(hex: "#b45309")
+            case .excellent: return Color(hex: "#059669")
             }
         }
 
-        // Body message color (darker shade, matches web message text)
         var messageColor: Color {
             switch self {
-            case .poor:      return Color(hex: "#991b1b")  // red-800
-            case .moderate:  return Color(hex: "#92400e")  // amber-800  ← screenshot
-            case .excellent: return Color(hex: "#047857")  // green-800
+            case .poor:      return Color(hex: "#991b1b")
+            case .moderate:  return Color(hex: "#92400e")
+            case .excellent: return Color(hex: "#047857")
             }
         }
     }
 
-    // MARK: - Score Classification
-    // Exactly mirrors web thresholds:
-    //   Poor     → confidenceScore < 0.35
-    //   Moderate → confidenceScore >= 0.35 && <= 0.75
+    // MARK: - Confidence Classification
+    //   Poor      → confidenceScore < 0.35
+    //   Moderate  → confidenceScore >= 0.35 && <= 0.75
     //   Excellent → confidenceScore > 0.75
-    // overallScore is on a 0–10 scale → normalise by dividing by 10
-    var scoreLevel: ScoreLevel {
+    var confidenceLevel: ConfidenceLevel {
         let normalised = confidenceScore ?? 0
         switch normalised {
-        case ..<0.35:      return .poor
-        case 0.35...0.75:  return .moderate
-        default:           return .excellent
+        case ..<0.35:     return .poor
+        case 0.35...0.75: return .moderate
+        default:          return .excellent
         }
-    }
-
-    // MARK: - Gauge Model
-
-    struct OverallScoreModel {
-        let value: Double
-        let range: ClosedRange<Double>
-        let segments: [GaugeSegment]
-
-        var normalizedValue: Double {
-            min(max(value, range.lowerBound), range.upperBound)
-        }
-    }
-
-    var overallScoreModel: OverallScoreModel {
-        OverallScoreModel(
-            value: overallScore ?? 0,
-            range: 0...10,
-            segments: .defaultSegments()
-        )
     }
 }
-
-
 
 extension DetailReportDataModel.ScenarioAttemptResponse {
 

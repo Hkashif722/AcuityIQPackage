@@ -18,3 +18,9 @@ internal extension Array where Element == GaugeSegment {
         }
     }
 }
+
+internal extension Array {
+    var nilIfEmpty: [Element]? {
+        isEmpty ? nil : self
+    }
+}

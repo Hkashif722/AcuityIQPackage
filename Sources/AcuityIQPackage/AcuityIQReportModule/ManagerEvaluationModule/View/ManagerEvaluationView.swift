@@ -63,12 +63,13 @@ struct ManagerEvaluationView: View {
                 id: 1,
                 date: "2026-04-13",
                 time: "10:00 AM",
+                overallScore: 7.5,
                 parameters: [
-                    .init(parameter: "Clarity", score: 1, remarks: "Ggfgj"),
-                    .init(parameter: "Content Relevance", score: 2, remarks: "Gufdf hdgjjg"),
-                    .init(parameter: "Structure & Organization", score: 3, remarks: "Hgfgjk"),
-                    .init(parameter: "Intent Clarity", score: 4, remarks: "Guihf"),
-                    .init(parameter: "Delivery", score: 5, remarks: "Good overall delivery")
+                    .init(parameter: "Clarity", score: 1, remarks: "Ggfgj", totalWeightage: "20"),
+                    .init(parameter: "Content Relevance", score: 2, remarks: "Gufdf hdgjjg", totalWeightage: "20"),
+                    .init(parameter: "Structure & Organization", score: 3, remarks: "Hgfgjk", totalWeightage: "20"),
+                    .init(parameter: "Intent Clarity", score: 4, remarks: "Guihf", totalWeightage: "20"),
+                    .init(parameter: "Delivery", score: 5, remarks: "Good overall delivery", totalWeightage: "20")
                 ]
             ))
         )

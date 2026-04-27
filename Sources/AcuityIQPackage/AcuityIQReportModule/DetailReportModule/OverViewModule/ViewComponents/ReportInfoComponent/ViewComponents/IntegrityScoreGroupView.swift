@@ -10,9 +10,9 @@ import SwiftUI
 
 // MARK: - IntegrityScoreGroupView
 struct IntegrityScoreGroupView: View {
-    typealias ScoreLevel = DetailReportDataModel.ScenarioAttemptResponse.ScoreLevel
+    typealias ConfidenceLevel = DetailReportDataModel.ScenarioAttemptResponse.ConfidenceLevel
 
-    let level: ScoreLevel 
+    let level: ConfidenceLevel
 
     var body: some View {
         GroupBox {
@@ -87,7 +87,7 @@ struct IntegrityScoreGroupView: View {
     ScrollView {
         VStack(spacing: 16) {
             ForEach(
-                DetailReportDataModel.ScenarioAttemptResponse.ScoreLevel.allCases,
+                DetailReportDataModel.ScenarioAttemptResponse.ConfidenceLevel.allCases,
                 id: \.self
             ) { level in
                 IntegrityScoreGroupView(level: level)

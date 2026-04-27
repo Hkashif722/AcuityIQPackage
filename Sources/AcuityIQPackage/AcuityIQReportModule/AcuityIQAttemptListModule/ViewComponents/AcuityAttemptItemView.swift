@@ -79,11 +79,11 @@ private extension AcuityAttemptItemView {
     var managerEvalautionView: some View {
         if let managerEvaluation = attempt.managerEvaluation {
             Image(systemName: "person.crop.circle.fill")
-                .foregroundStyle(managerEvaluation.scoreLabel.foregroundColor, managerEvaluation.scoreLabel.backgroundColor)
+                .foregroundStyle(managerEvaluation.overAllScoreLabel.foregroundColor, managerEvaluation.scoreLabel.backgroundColor)
                 .font(.system(size: 36))
                 .overlay(
                     Circle()
-                        .stroke(managerEvaluation.scoreLabel.ringColor, lineWidth: 2)
+                        .stroke(managerEvaluation.overAllScoreLabel.ringColor, lineWidth: 2)
                 )
                 .anyButton(.plain, action: { onManagerEvaluationTap(attempt) })
         }

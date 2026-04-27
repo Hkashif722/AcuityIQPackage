@@ -124,6 +124,10 @@ extension  DetailReportDataModel {
         var fullVideoPathURL: URL? {
             ResourceUtils.getResourceURLPath(videoPath)
         }
+        
+        var getCriticalErrors: [String] {
+            criticals?.nilIfEmpty ?? ["No Critical Errors observed"]
+        }
 
         enum CodingKeys: String, CodingKey {
             case scenarioType, scenarioId, courseId, moduleId, moduleAttemptId

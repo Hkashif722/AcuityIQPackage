@@ -21,38 +21,45 @@ struct ManagerEvaluationScoreCardView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 20) {
-            scoreRingView
+            overAllScoreContentView
             statsView
             Spacer()
         }
         .padding(20)
-        .background(evaluation.scoreLabel.backgroundColor)
+        .background(Color(hex: "#f7f4ff"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
+    
+    private var overAllScoreContentView: some View {
+        VStack(spacing: 16) {
+            scoreRingView
+            overallScore
+        }
+    }
+    
     // MARK: - Score Ring
 
     private var scoreRingView: some View {
         ZStack {
             Circle()
                 .stroke(
-                    evaluation.scoreLabel.borderColor.opacity(0.2),  // ← was: Color(red: 0.91, ...)
+                    evaluation.overAllScoreLabel.borderColor.opacity(0.2),
                     lineWidth: 6
                 )
                 .frame(width: 80, height: 80)
 
             Circle()
-                .trim(from: 0, to: evaluation.totalScore / 10.0)
+                .trim(from: 0, to: (evaluation.overallScore ?? 0) / 10.0)
                 .stroke(
-                    evaluation.scoreLabel.ringColor,
+                    evaluation.overAllScoreLabel.ringColor,
                     style: StrokeStyle(lineWidth: 6, lineCap: .round)
                 )
                 .frame(width: 80, height: 80)
                 .rotationEffect(.degrees(-90))
 
             HStack(alignment: .bottom, spacing: 1) {
-                Text("\(Int(evaluation.totalScore.rounded()))")
-                    .font(.system(size: 22, weight: .semibold))
+                Text(String(format: "%.1f", evaluation.overallScore ?? 0))                    .font(.system(size: 22, weight: .semibold))
                     .foregroundColor(.primary)
                 Text("/10")
                     .font(.system(size: 11))
@@ -60,6 +67,12 @@ struct ManagerEvaluationScoreCardView: View {
                     .padding(.bottom, 3)
             }
         }
+    }
+    
+    private var overallScore: some View {
+        Text("Overall Score")
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundStyle(.secondary)
     }
 
     // MARK: - Stats
@@ -78,7 +91,7 @@ struct ManagerEvaluationScoreCardView: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(evaluation.scoredCount)")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(evaluation.scoreLabel.foregroundColor)  // ← was: Color(red: 0.07, ...)
+                    .foregroundColor(evaluation.scoreLabel.foregroundColor)
                 Text("Scored")
                     .font(.system(size: 14))
                     .foregroundColor(.secondary)
@@ -89,12 +102,12 @@ struct ManagerEvaluationScoreCardView: View {
     }
 
     private var scoreBadgeView: some View {
-        Text(evaluation.scoreLabel.rawValue)
+        Text(evaluation.overAllScoreLabel.rawValue)
             .font(.system(size: 13, weight: .medium))
-            .foregroundColor(evaluation.scoreLabel.foregroundColor)
+            .foregroundColor(evaluation.overAllScoreLabel.foregroundColor)
             .padding(.horizontal, 12)
             .padding(.vertical, 5)
-            .background(evaluation.scoreLabel.backgroundColor)
+            .background(evaluation.overAllScoreLabel.backgroundColor)
             .clipShape(Capsule())
     }
 }
@@ -105,9 +118,10 @@ struct ManagerEvaluationScoreCardView: View {
             id: 1,
             date: "2026-04-13",
             time: "10:00 AM",
+            overallScore: 7.5,
             parameters: [
-                .init(parameter: "Clarity", score: 1, remarks: "Ggfgj"),
-                .init(parameter: "Content Relevance", score: 2, remarks: "Gufdf hdgjjg")
+                .init(parameter: "Clarity", score: 1, remarks: "Ggfgj", totalWeightage: "20"),
+                .init(parameter: "Content Relevance", score: 2, remarks: "Gufdf hdgjjg", totalWeightage: "20")
             ]
         )
     )

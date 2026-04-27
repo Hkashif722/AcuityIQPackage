@@ -131,9 +131,54 @@ extension AcuityReportUploadViewModel {
             attemptsNavModel = attempts
         }
         
+        // Build weightage lookup from EvaluationParameter → [name: weightage]
+        let weightageMap: [String: String] = Dictionary(
+            uniqueKeysWithValues: (navModel.scenarioModel.evaluationParameters ?? [])
+                .compactMap { param -> (String, String)? in
+                    guard let name = param.name, let weightage = param.weightage else { return nil }
+                    return (name, weightage)
+                }
+        )
+        
+        // Inject totalWeightage into each attempt's ManagerEvaluationParameter
+        let enrichedAttempts: [AcuityIQReportDataModel.Scenario.Attempt] = attemptsNavModel.map { attempt in
+            guard let managerEval = attempt.managerEvaluation,
+                  let parameters = managerEval.parameters else { return attempt }
+            
+            let enrichedParameters = parameters.map { param -> AcuityIQReportDataModel.Scenario.ManagerEvaluationParameter in
+                let matchedWeightage = param.parameter.flatMap { weightageMap[$0] }
+                return .init(
+                    parameter: param.parameter,
+                    score: param.score,
+                    remarks: param.remarks,
+                    totalWeightage: matchedWeightage ?? param.totalWeightage  // fallback to original
+                )
+            }
+            
+            let enrichedEval = AcuityIQReportDataModel.Scenario.ManagerEvaluation(
+                id: managerEval.id,
+                date: managerEval.date,
+                time: managerEval.time,
+                overallScore: managerEval.overallScore,
+                parameters: enrichedParameters
+            )
+            
+            return .init(
+                attemptId: attempt.attemptId,
+                attemptNumber: attempt.attemptNumber,
+                userId: attempt.userId,
+                userName: attempt.userName,
+                score: attempt.score,
+                attemptDate: attempt.attemptDate,
+                managerEvaluation: enrichedEval
+            )
+        }
+        
         let navModel = NavigationViewModel.AcuityAttemptNavModel(
-            scenarioID: self.navModel.scenarioModel.scenarioId,
-            secnarioAttempts: attemptsNavModel
+            scenarioID: navModel.scenarioModel.scenarioId,
+            secnarioAttempts: enrichedAttempts,
+            courseID: navModel.courseId,
+            moduleID: navModel.moduleId
         )
         NavigationService.shared.navigate(using: router, to: AppNavigationDestination.attemptList(navModel: navModel))
     }

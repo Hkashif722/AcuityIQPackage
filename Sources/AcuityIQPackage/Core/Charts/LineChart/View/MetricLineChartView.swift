@@ -30,9 +30,14 @@ public struct MetricLineChartView<DataPoint: LineChartProtocol.LineChartDataPoin
 
     private var xDomain: ClosedRange<Double> {
         let values = dataPoints.map(\.xValue)
-        return (values.min() ?? 0)...(values.max() ?? 1)
+        let minVal = values.min() ?? 1
+        let maxVal = values.max() ?? 1
+        let axisMax = xAxisValues.last ?? maxVal
+        let step = ceil((maxVal - minVal) / 4.0)
+        let leftPadding = max(0.5, step * 0.1)  // 10% of step, minimum 0.5
+        return (minVal - leftPadding)...(Swift.max(maxVal, axisMax) + 0.2)
     }
-
+    
     private var yAxisValues: [Double] {
         stride(
             from: config.yDomain.lowerBound,
@@ -42,7 +47,15 @@ public struct MetricLineChartView<DataPoint: LineChartProtocol.LineChartDataPoin
     }
     
     private var xAxisValues: [Double] {
-        dataPoints.map(\.xValue).sorted()
+        let sorted = Array(Set(dataPoints.map(\.xValue))).sorted()
+        let count = sorted.count
+        guard count > 5 else { return sorted }
+
+        let first = sorted.first!
+        let last = sorted.last!
+        let step = ceil((last - first) / 4.0)
+
+        return (0..<5).map { first + Double($0) * step }
     }
 
     // MARK: - Body
@@ -100,7 +113,7 @@ private extension MetricLineChartView {
                 AxisGridLine()
                 AxisTick()
                 
-                AxisValueLabel {
+                AxisValueLabel(anchor: .topTrailing) {
                     if let doubleValue = value.as(Double.self) {
                         if let label = config.xLabel {
                             Text("\(label) \(Int(doubleValue))")

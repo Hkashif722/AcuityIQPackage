@@ -56,7 +56,7 @@ struct ManagerEvaluationParameterItemView: View {
             Text("\(Int(parameter.score ?? 0))")
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(parameter.badgeForegroundColor)
-            Text("/20")
+            Text("/\(parameter.effectiveMax)")
                 .font(.system(size: 13))
                 .foregroundColor(parameter.badgeForegroundColor.opacity(0.6))
         }
@@ -106,11 +106,11 @@ struct ManagerEvaluationParameterItemView: View {
     VStack(spacing: 12) {
         ManagerEvaluationParameterItemView(
             index: 1,
-            parameter: .init(parameter: "Clarity", score: 1, remarks: "Ggfgj")
+            parameter: .init(parameter: "Clarity", score: 1, remarks: "Ggfgj", totalWeightage: "20")
         )
         ManagerEvaluationParameterItemView(
             index: 2,
-            parameter: .init(parameter: "Content Relevance", score: 15, remarks: "Excellent relevance")
+            parameter: .init(parameter: "Content Relevance", score: 15, remarks: "Excellent relevance", totalWeightage: "20")
         )
     }
     .padding()

@@ -79,6 +79,7 @@ extension AcuityIQReportDataModel {
             let id: Int?
             let date: String?
             let time: String?
+            let overallScore: Double?
             let parameters: [ManagerEvaluationParameter]?
 
             // MARK: - Computed
@@ -101,13 +102,18 @@ extension AcuityIQReportDataModel {
                 parameters?.filter { ($0.score ?? 0) > 0 }.count ?? 0
             }
 
-            // Mirrors web:
-            //   mgr-chip-good → >= 8
-            //   mgr-chip-avg  → >= 5 && < 8
-            //   mgr-chip-low  → < 5
+           
             var scoreLabel: ScoreLabel {
                 switch totalScore {
-                case 8...10: return .good
+                case 8...:   return .good
+                case 5..<8:  return .average
+                default:     return .low
+                }
+            }
+
+            var overAllScoreLabel: ScoreLabel {
+                switch overallScore ?? 0 {
+                case 8...:   return .good
                 case 5..<8:  return .average
                 default:     return .low
                 }
@@ -159,8 +165,13 @@ extension AcuityIQReportDataModel {
             let parameter: String?
             let score: Double?
             let remarks: String?
+            let totalWeightage: String?
             
             // MARK: - Computed
+            
+            var effectiveMax: Int {
+                Int(totalWeightage ?? "20") ?? 20
+            }
             
             var scoreFormatted: String {
                 "\(Int(score ?? 0))/20"
@@ -170,15 +181,13 @@ extension AcuityIQReportDataModel {
                 min((score ?? 0) / 20.0, 1.0)
             }
             
-            // Mirrors web mgr-chip thresholds, scaled to /20:
-            //   good    → >= 16  (= 8/10 × 2)
-            //   average → >= 10  (= 5/10 × 2)
-            //   low     → <  10
+            
             private var scoreLabel: ManagerEvaluation.ScoreLabel {
-                switch score ?? 0 {
-                case 16...20: return .good
-                case 10..<16: return .average
-                default:      return .low
+                let normalized = (score ?? 0) / Double(effectiveMax)
+                switch normalized {
+                case 0.8...:    return .good
+                case 0.5..<0.8: return .average
+                default:        return .low
                 }
             }
             

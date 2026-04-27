@@ -16,15 +16,32 @@ struct AllAttemptDataModel {
         
         let secnarioID: Int
         let userID: Int
+        let courseID: Int?
+        let moduleID: Int?
+        
+        init(secnarioID: Int, userID: Int, courseID: Int? = nil, moduleID: Int? = nil) {
+            self.secnarioID = secnarioID
+            self.userID = userID
+            self.courseID = courseID
+            self.moduleID = moduleID
+        }
 
         var path: String {
-            [
+            var components: [String] = [
                 APIConst.courseBaseUrl,
                 APIConst.versionAPI,
-                APIConst.GetScenarioOverallReport,
+                APIConst.GetScenarioOverallReport
+            ]
+            
+            if let courseID { components.append(String(courseID)) }
+            if let moduleID { components.append(String(moduleID)) }
+            
+            components.append(contentsOf: [
                 String(secnarioID),
                 String(userID)
-            ].joined(separator: "/")
+            ])
+            
+            return components.joined(separator: "/")
         }
 
         var method: NetworkService.HTTPMethod { .get }
@@ -119,12 +136,21 @@ extension AllAttemptDataModel {
         
         var getStatusColor: Color {
             switch status.lowercased() {
-            case "inconsistent":
-                Color(hex: "#dc2627")
-            case "stagnant":
-                Color(hex: "#b5530a")
+            // GREEN
+            case "mastered", "good":
+                return Color(hex: "#16a34a")
+            // BLUE
+            case "improved":
+                return Color(hex: "#2563eb")
+            // YELLOW
+            case "room for improvement", "stagnant", "needs significant work":
+                return Color(hex: "#ca8a04")
+            // RED
+            case "poor", "inconsistent", "regressed":
+                return Color(hex: "#dc2626")
+            // Default
             default:
-                    .orange
+                return Color(hex: "#6b7280")
             }
         }
     }
@@ -160,12 +186,11 @@ extension AllAttemptDataModel {
                 title: name.replace("Progress", replacement: ""),
                 accentColor: Color(rgbString: color),
                 yDomain: 0...10,
-                showRuleMark: true,
-                xLabel: "Attempt"
+                showRuleMark: true
             )
             
             let chartModel: [LineChartDataModel.LineChartPoint] = Array(self.data.enumerated()).map { index, rating in
-               LineChartDataModel.LineChartPoint(xValue: Double(index), yValue: rating)
+               LineChartDataModel.LineChartPoint(xValue: Double(index + 1), yValue: rating)
             }
             
             return (config,chartModel)
@@ -186,7 +211,7 @@ extension AllAttemptDataModel.AllAttemptResponse {
         )
         
         let chartModel: [LineChartDataModel.LineChartPoint] = Array(self.overallRatings.enumerated()).map { index, rating in
-           LineChartDataModel.LineChartPoint(xValue: Double(index), yValue: rating)
+           LineChartDataModel.LineChartPoint(xValue: Double(index + 1), yValue: rating)
         }
         
         return (config,chartModel)
@@ -214,7 +239,7 @@ extension AllAttemptDataModel.AllAttemptResponse {
         let beginningPoints: [LineChartDataModel.SectionPoint] =
         beginning.enumerated().map { index, value in
             LineChartDataModel.SectionPoint(
-                xValue: Double(index),
+                xValue: Double(index + 1),
                 yValue: value,
                 section: "Beginning"
             )
@@ -224,7 +249,7 @@ extension AllAttemptDataModel.AllAttemptResponse {
         let middlePoints: [LineChartDataModel.SectionPoint] =
         middle.enumerated().map { index, value in
             LineChartDataModel.SectionPoint(
-                xValue: Double(index),
+                xValue: Double(index + 1),
                 yValue: value,
                 section: "Middle"
             )
@@ -234,7 +259,7 @@ extension AllAttemptDataModel.AllAttemptResponse {
         let endPoints: [LineChartDataModel.SectionPoint] =
         end.enumerated().map { index, value in
             LineChartDataModel.SectionPoint(
-                xValue: Double(index),
+                xValue: Double(index + 1),
                 yValue: value,
                 section: "End"
             )
@@ -256,8 +281,8 @@ extension AllAttemptDataModel.AllAttemptResponse {
             showRuleMark: false
         )
         
-        let chartModel: [LineChartDataModel.LineChartPoint] = Array(self.overallRatings.enumerated()).map { index, rating in
-            LineChartDataModel.LineChartPoint(xValue: Double(index), yValue: rating)
+        let chartModel: [LineChartDataModel.LineChartPoint] = Array(self.criticalErrors.enumerated()).map { index, rating in
+            LineChartDataModel.LineChartPoint(xValue: Double(index + 1), yValue: rating)
         }
         
         return (config,chartModel)

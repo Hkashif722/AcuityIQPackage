@@ -47,7 +47,12 @@ extension AcuityAttemptListViewModel {
     
     func didTapAttempt(_ attempt: AcuityIQReportDataModel.Scenario.Attempt) {
         // Navigate to detailed report view
-        let navModel = NavigationViewModel.DetailReoportNavModel(scenarioID: navModel.scenarioID, secnarioAttempt: attempt)
+        let navModel = NavigationViewModel.DetailReoportNavModel(
+            scenarioID: navModel.scenarioID,
+            secnarioAttempt: attempt,
+            courseID: navModel.courseID,
+            moduleID: navModel.moduleID
+        )
         NavigationService.shared.navigate(using: router, to: AppNavigationDestination.detailReportView(navModel: navModel))
     }
     

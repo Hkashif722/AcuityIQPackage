@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct ReportInfoView: View {
-    typealias ScoreLevel = DetailReportDataModel.ScenarioAttemptResponse.ScoreLevel
+    typealias ConfidenceLevel = DetailReportDataModel.ScenarioAttemptResponse.ConfidenceLevel
 
     let summary: String
     let strength: [String]
     let areaOfImprovement: [String]
     let criticalErrors: [String]
     let detailedAnalysis: String  // fixed typo
-    let level: ScoreLevel
+    let level: ConfidenceLevel
 
     var body: some View {
         VStack(spacing: 16) {

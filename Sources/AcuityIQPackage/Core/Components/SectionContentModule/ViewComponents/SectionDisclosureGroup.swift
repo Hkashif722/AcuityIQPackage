@@ -9,19 +9,18 @@ import SwiftUI
 import SwiftUIUtilities
 
 struct SectionDisclosureGroup<Content: View>: View {
-    
-  
+
     let sectionTitle: String
     let sectionStatus: String
     let tagColor: Color
     @ViewBuilder var content: Content
-    
+
     @State private var isExpanded = false
-    
+
     var body: some View {
         VStack(spacing: 0) {
             headerView
-            
+
             if isExpanded {
                 VStack {
                     content
@@ -33,44 +32,43 @@ struct SectionDisclosureGroup<Content: View>: View {
             }
         }
     }
-    
+
     private var headerView: some View {
         HStack {
             Text(sectionTitle)
                 .font(.subheadline.bold())
-                
+
             Spacer()
-            
+
             HStack(spacing: 8) {
                 statusTagView
-                cheveronIcon
+                chevronIcon
             }
         }
         .padding(12)
         .background(tagColor.opacity(0.1))
-        .cornerRadiusPkg(10, corners: [.topLeft, .topRight])
+        .cornerRadiusPkg(10, corners: isExpanded ? [.topLeft, .topRight] : .allCorners)
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 isExpanded.toggle()
             }
         }
-        
     }
-    
+
     private var statusTagView: some View {
-        Text("Stagnant")
+        Text(sectionStatus)
             .font(.caption)
             .foregroundStyle(tagColor)
             .padding(.init(top: 4, leading: 8, bottom: 4, trailing: 8))
-            .background(tagColor.opacity(0.01))
+            .background(tagColor.opacity(0.1))
             .clipShape(Capsule())
             .overlay {
                 Capsule().stroke(tagColor, lineWidth: 1)
             }
     }
-    
-    private var cheveronIcon: some View {
+
+    private var chevronIcon: some View {
         Image(systemName: "chevron.right")
             .font(.subheadline.bold())
             .foregroundStyle(.gray)
@@ -85,13 +83,9 @@ struct SectionDisclosureGroup<Content: View>: View {
         sectionStatus: "Consistent",
         tagColor: .green
     ) {
-        Text(
-            "Detailed insights go here..."
-        )
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
+        Text("Detailed insights go here...")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
     }
-    .padding(
-            .horizontal
-        )
+    .padding(.horizontal)
 }

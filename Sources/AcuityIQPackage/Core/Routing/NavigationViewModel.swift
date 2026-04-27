@@ -13,11 +13,29 @@ extension NavigationViewModel {
     struct AcuityAttemptNavModel {
         let scenarioID: Int
         let secnarioAttempts: [AcuityIQReportDataModel.Scenario.Attempt]
+        let courseID: Int?
+        let moduleID: Int?
+        
+        init(scenarioID: Int, secnarioAttempts: [AcuityIQReportDataModel.Scenario.Attempt], courseID: Int? = nil, moduleID: Int? = nil) {
+            self.scenarioID = scenarioID
+            self.secnarioAttempts = secnarioAttempts
+            self.courseID = courseID
+            self.moduleID = moduleID
+        }
     }
     
     struct DetailReoportNavModel {
         let scenarioID: Int
         let secnarioAttempt: AcuityIQReportDataModel.Scenario.Attempt
+        let courseID: Int?
+        let moduleID: Int?
+        
+        init(scenarioID: Int, secnarioAttempt: AcuityIQReportDataModel.Scenario.Attempt, courseID: Int? = nil , moduleID: Int? = nil) {
+            self.scenarioID = scenarioID
+            self.secnarioAttempt = secnarioAttempt
+            self.courseID = courseID
+            self.moduleID = moduleID
+        }
     }
     
     struct AcuityReportUploadNavModel {

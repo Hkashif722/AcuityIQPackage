@@ -30,9 +30,9 @@ struct OverView: View {
                     summary: vm.scenarioAttemptResponseModel.summary ?? "",
                     strength: vm.scenarioAttemptResponseModel.strengths ?? [],
                     areaOfImprovement: vm.scenarioAttemptResponseModel.improvements ?? [],
-                    criticalErrors: vm.scenarioAttemptResponseModel.criticals ?? [],
+                    criticalErrors: vm.scenarioAttemptResponseModel.getCriticalErrors,
                     detailedAnalysis: vm.scenarioAttemptResponseModel.contentRelevance ?? "",
-                    level: vm.scenarioAttemptResponseModel.scoreLevel
+                    level: vm.scenarioAttemptResponseModel.confidenceLevel
                 )
             }
         }

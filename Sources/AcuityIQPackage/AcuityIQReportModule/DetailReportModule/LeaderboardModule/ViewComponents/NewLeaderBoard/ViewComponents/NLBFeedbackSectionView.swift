@@ -56,13 +56,12 @@ struct NLBFeedbackSectionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            let items = attempt.nlbFeedbackItems
-            if items.isEmpty {
-                emptyFeedback
-            } else {
-                ForEach(items, id: \.label) { item in
-                    feedbackRow(label: item.label, text: item.text)
+            if let items = attempt.strengths, !items.isEmpty {
+                ForEach(items, id: \.self) { item in
+                    feedbackRow(feedback: item)
                 }
+            } else {
+                emptyFeedback
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -85,18 +84,13 @@ struct NLBFeedbackSectionView: View {
 
     // MARK: Row — bullet circle + label badge + feedback text
 
-    private func feedbackRow(label: String, text: String) -> some View {
+    private func feedbackRow(feedback: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             bulletIcon
-            VStack(alignment: .leading, spacing: 3) {
-                Text(label)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(.secondary)
-                Text(text)
-                    .font(.footnote)
-                    .foregroundStyle(Color(.darkGray))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text(feedback)
+                .font(.footnote)
+                .foregroundStyle(Color(.darkGray))
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
