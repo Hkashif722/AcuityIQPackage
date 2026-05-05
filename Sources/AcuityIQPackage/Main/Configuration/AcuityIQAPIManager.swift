@@ -8,6 +8,7 @@
 import Foundation
 import NetworkService
 import SwiftUIUtilities
+import RolePlayKit
 
 public actor AcuityIQAPIManager {
 
@@ -25,10 +26,6 @@ public actor AcuityIQAPIManager {
 
     nonisolated internal var getConfiguaredDate: String {
         config?.dateConfiguration ?? ""
-    }
-
-    nonisolated internal var sasToken: String {
-        config?.sas_token ?? ""
     }
     
     nonisolated internal var ENV: AcuityIQENV? {
@@ -55,6 +52,7 @@ public actor AcuityIQAPIManager {
         ApiService.shared.setAuthToken(config.tokenProvider)
         APIConfiguration.shared.baseURL = APIConst.baseURL
         self.configureSwiftUIUtilityEnvironment(config)
+        self.configureRolePlayEnvironment(config: config)
     }
 
     // Shared accessor
@@ -76,5 +74,12 @@ public actor AcuityIQAPIManager {
             lxpBlobPath1: APIConst.lxpBlobPath1
         )
         SwiftUtilityEnvironment.configure(modelConfiguration)
+    }
+    
+    
+    //MARK: Configure Role Play environment
+    
+    private func configureRolePlayEnvironment(config: AcuityIQPackageConfig) {
+        RolePlayKitModuleConfiguration.shared.configureRolePlayEnvironment(config: config)
     }
 }

@@ -208,16 +208,16 @@ extension AcuityIQReportDataModel {
             }
         }
         // MARK: - Custom Decoder
-        
+
         private enum CodingKeys: String, CodingKey {
             case scenarioId, scenarioName, scenarioDescription, evaluationParameters, knowledgeDocument, referenceVideo, open, isManagerEvaluation, attempts, keywords, maximumAttempts, pendingAttempts, scenarioType, successCriteria, usageType, customUsageType, usageDescription
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            
+
             scenarioId = try container.decode(Int.self, forKey: .scenarioId)
-            
+
             scenarioName = try container.decodeIfPresent(String.self, forKey: .scenarioName)
             scenarioDescription = try container.decodeIfPresent(String.self, forKey: .scenarioDescription)
             knowledgeDocument = try container.decodeIfPresent(String.self, forKey: .knowledgeDocument)
@@ -232,7 +232,7 @@ extension AcuityIQReportDataModel {
             usageType = try container.decodeIfPresent(String.self, forKey: .usageType)
             customUsageType = try container.decodeIfPresent(String.self, forKey: .customUsageType)
             usageDescription = try container.decodeIfPresent(String.self, forKey: .usageDescription)
-            
+
             // Handle stringified JSON arrays: supports both string AND native array
             if let evalString = try container.decodeIfPresent(String.self, forKey: .evaluationParameters),
                !evalString.isEmpty,
@@ -242,7 +242,7 @@ extension AcuityIQReportDataModel {
                 // Fallback: try decoding as native array if not a string
                 evaluationParameters = try? container.decodeIfPresent([EvaluationParameter].self, forKey: .evaluationParameters)
             }
-            
+
             if let keyString = try container.decodeIfPresent(String.self, forKey: .keywords),
                !keyString.isEmpty,
                let keyData = keyString.data(using: .utf8) {
@@ -251,7 +251,7 @@ extension AcuityIQReportDataModel {
                 keywords = try? container.decodeIfPresent([String].self, forKey: .keywords)
             }
         }
-        
+
         // Convenience initializer for previews/tests
         init(
             scenarioId: Int,

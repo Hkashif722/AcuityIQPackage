@@ -16,19 +16,23 @@ let package = Package(
             targets: ["AcuityIQPackage"]),
     ],
     dependencies: [
-//        .package(
-//            url: "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
-//            .upToNextMinor(from: "1.0.0")
-//        ),
-        .package(path: "/Users/kashifhussain/Desktop/iOS_Network_Service/IOS_APIManager"),
-//        .package(
-//            url: "https://github.com/Hkashif722/SwiftUIUtility",
-//            branch: "update"
-//        ),
-            .package(path: "/Users/kashifhussain/Desktop/OJT_New_Design/SwiftUIUtility/SwiftUIUtility"),
+        .package(
+            url: "https://dev.azure.com/EnthralltechDevOps/IOS_APIManager/_git/IOS_APIManager",
+            branch: "add_download_method_bug_fixes"
+        ),
+        .package(
+            url: "https://github.com/Hkashif722/SwiftUIUtility",
+            branch: "update"
+        ),
+        .package(
+            path: "/Users/kashifhussain/Desktop/RolePlayKit/IOS_Roleplay-Kit"
+        ),
         .package(
             url: "https://github.com/danielgindi/Charts.git",
             .upToNextMajor(from: "5.1.0")
+        ),
+        .package(
+            path: "/Users/kashifhussain/Desktop/AcuityBundle/RolePlayPackageEvents" // ← updated
         )
     ],
     targets: [
@@ -39,7 +43,9 @@ let package = Package(
             dependencies: [
                 .product(name: "NetworkService", package: "IOS_APIManager"),
                 .product(name: "SwiftUIUtilities", package: "SwiftUIUtility"),
-                .product(name: "DGCharts", package: "Charts")
+                .product(name: "RolePlayKit", package: "IOS_Roleplay-Kit"),
+                .product(name: "DGCharts", package: "Charts"),
+                .product(name: "RolePlayPackageEvents", package: "RolePlayPackageEvents"),
             ],
             resources: [
                 .process("Resource/Media.xcassets")

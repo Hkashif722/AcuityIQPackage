@@ -27,3 +27,16 @@ extension String {
         return normalized.components(separatedBy: "?").first ?? normalized
     }
 }
+
+
+internal extension String {
+
+    var localized: String {
+        NSLocalizedString(self, bundle: .acuityBundle, comment: "")
+    }
+
+    func localized(with arguments: CVarArg...) -> String {
+        String(format: NSLocalizedString(self, bundle: .acuityBundle, comment: ""), arguments: arguments)
+    }
+}
+

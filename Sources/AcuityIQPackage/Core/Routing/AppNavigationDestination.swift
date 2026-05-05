@@ -25,6 +25,9 @@ enum AppNavigationDestination {
     case badgeView(badge: LeaderboardDataModel.NLBBadge)
     case reportUploadView(navModel: NavigationViewModel.AcuityReportUploadNavModel)
     case managerEvaluationView(navModel: NavigationViewModel.ManagerEvaluationNavModel)
+    case managerEvaluationList
+    case managerEvaluationAttemptList(navModel: NavigationViewModel.ManagerEvaluationAttemptListNavModel)
+    case evaluateModule(navModel: NavigationViewModel.EvaluateModuleNavModel)
 
 }
 
@@ -81,6 +84,21 @@ extension AppNavigationDestination: NavigationProtocol {
         case .managerEvaluationView(let navModel):
             self.pushScreen(router) { router in
                 ManagerEvaluationView(router: router, navModel: navModel)
+            }
+
+        case .managerEvaluationList:
+            self.pushScreen(router) { router in
+                ManagerEvaluationListView(router: router)
+            }
+
+        case .managerEvaluationAttemptList(let navModel):
+            self.pushFullScreenCover(router) { router in
+                ManagerEvaluationAttemptListView(router: router, navModel: navModel)
+            }
+
+        case .evaluateModule(let navModel):
+            self.showFullSheetWithDragGesture(router) { router in
+                EvaluateModuleView(router: router, navModel: navModel)
             }
 
         }

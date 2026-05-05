@@ -64,6 +64,25 @@ public class AcuityIQNavigationService {
         }
     }
 
+    // MARK: - Public Methods - Manager Evaluation List Entry Point
+
+    /// Navigates to the ManagerEvaluationListView
+    /// - Parameters:
+    ///   - router: The router to use for navigation
+    ///   - onDismiss: Optional callback when the user dismisses the flow
+    public func showManagerEvaluationList(
+        router: AnyRouter,
+        userID: Int? = nil,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        self.currentRouter = router
+        self.onDismissCallback = onDismiss
+
+        router.showScreen(.push) { router in
+            ManagerEvaluationListView(router: router, userID: userID)
+        }
+    }
+
     // MARK: - Helper Methods
 
     private func showErrorAlert(message: String) {

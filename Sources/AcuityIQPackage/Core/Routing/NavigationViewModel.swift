@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  OJT_Package
+//  AcuityIQ_Package
 //
 //  Created by Kashif Hussain on 13/01/26.
 //
@@ -63,5 +63,58 @@ extension NavigationViewModel {
     struct ManagerEvaluationNavModel {
         let managerEvaluation: AcuityIQReportDataModel.Scenario.ManagerEvaluation
     }
+
+    struct ManagerEvaluationListNavModel {
+        // Reserved for future filters/configuration passed into the list
+    }
+
+    struct ManagerEvaluationAttemptListNavModel {
+        let scenario: ManagerEvaluationListDataModel.ScenarioAttempt
+    }
+
+    struct EvaluateModuleNavModel {
+        let attempt: ManagerEvaluationListDataModel.ScenarioAttempt.Attempt
+        let scenario: ManagerEvaluationListDataModel.ScenarioAttempt
+    }
     
+}
+
+
+//MARK: Role Play related Model
+
+extension NavigationViewModel {
+    
+    struct RolePlayDashboardNavModel {
+        let rolePlayTitle: String
+        let projectID: Int?
+        let moduleId: Int?
+        let moduleStatus: String?
+        let courseId: Int?
+        let attempt: (total: Int?, left: Int?)?
+        let moduleAttempts: [[String: Any]]?
+        let evaluationParameters: [[String: Any]]?
+        let keywords: [String]?
+
+        init(
+            rolePlayTitle: String,
+            projectID: Int? = nil,
+            moduleId: Int? = nil,
+            moduleStatus: String? = nil,
+            courseId: Int? = nil,
+            attempt: (total: Int?, left: Int?)? = nil,
+            moduleAttempts: [[String: Any]]? = nil,
+            evaluationParameters: [[String: Any]]? = nil,
+            keywords: [String]? = nil
+        ) {
+            self.rolePlayTitle = rolePlayTitle
+            self.projectID = projectID
+            self.moduleId = moduleId
+            self.moduleStatus = moduleStatus
+            self.courseId = courseId
+            self.attempt = attempt
+            self.moduleAttempts = moduleAttempts
+            self.evaluationParameters = evaluationParameters
+            self.keywords = keywords
+        }
+    }
 }

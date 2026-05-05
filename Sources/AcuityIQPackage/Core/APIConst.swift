@@ -20,6 +20,8 @@ internal struct APIConst {
     static nonisolated(unsafe) var lxpBlobPath1 = ""
     static let ContentPath = "https://content.gogetempowered.com"
     static let GetScenariosForUser = "c/AIScenario/GetScenariosForUser/false"
+    static let GetScenarioAttemptsForManager = "c/AIScenario/GetScenarioAttemptsForManager"
+    static let PostManagerEvaluation = "c/AIScenario/PostManagerEvaluation"
     static let GetScenarioAnalysis = "c/AIScenario/GetAnalysis"
     static let GetScenarioOverallReport = "c/AIScenario/GetOverallReport"
     static let GetScenarioLeaderboard = "c/AIScenario/GetLeaderboard"
