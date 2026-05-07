@@ -22,6 +22,14 @@ struct ManagerEvaluationAttemptListView: View {
             attemptListContentView
         }
         .customBackButtonPkg(navTitle: "Attempts", action: vm.goBack)
+        .onAppear {
+            vm.shouldRefreshScenario = false
+        }
+        .onDisappear {
+            if vm.shouldRefreshScenario {
+                NotificationCenter.default.post(name: .managerEvaluationListNeedsRefresh, object: nil)
+            }
+        }
     }
 }
 

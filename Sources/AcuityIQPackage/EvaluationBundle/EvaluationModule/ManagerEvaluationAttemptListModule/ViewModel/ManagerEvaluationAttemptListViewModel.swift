@@ -16,6 +16,7 @@ class ManagerEvaluationAttemptListViewModel: RoutableViewModel {
     // MARK: - Published State
     @Published var searchText: String = ""
     @Published var allAttempts: [ManagerEvaluationListDataModel.ScenarioAttempt.Attempt] = []
+    var shouldRefreshScenario = false
 
     var scenario: ManagerEvaluationListDataModel.ScenarioAttempt { navModel.scenario }
 
@@ -64,6 +65,7 @@ extension ManagerEvaluationAttemptListViewModel {
     }
 
     func didTapEvaluate(_ attempt: ManagerEvaluationListDataModel.ScenarioAttempt.Attempt) {
+        shouldRefreshScenario = true
         let navModel = NavigationViewModel.EvaluateModuleNavModel(
             attempt: attempt,
             scenario: scenario

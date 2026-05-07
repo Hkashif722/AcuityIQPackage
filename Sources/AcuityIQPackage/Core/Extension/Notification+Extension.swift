@@ -9,4 +9,5 @@ import Foundation
 
 extension Notification.Name {
     static let managerEvaluationSubmitted = Notification.Name("managerEvaluationSubmitted")
+    static let managerEvaluationListNeedsRefresh = Notification.Name("managerEvaluationListNeedsRefresh")
 }

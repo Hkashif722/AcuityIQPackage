@@ -37,6 +37,7 @@ final class RolePlayKitModuleConfiguration: @unchecked Sendable {
             welcomePdfURL: config.rolePlayModelConfiguration.welcomePdfURL,
             userName: config.rolePlayModelConfiguration.userName,
             buildPath: config.rolePlayModelConfiguration.buildPath,
+            isUAT: AcuityIQAPIManager.shared.isUAT,
             onRequestPortrait: config.rolePlayModelConfiguration.onRequestPortrait,
             onRequestLandscape: config.rolePlayModelConfiguration.onRequestLandscape,
             onResetOrientation: config.rolePlayModelConfiguration.onResetOrientation

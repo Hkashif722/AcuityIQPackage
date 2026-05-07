@@ -47,19 +47,9 @@ struct RolePlayDashboardView: View {
                 // MARK: - Action Chips
                 HStack(spacing: 12) {
                     
-                    ChipButton(title: "Evaluation Criteria") {
-                        // TODO: Show evaluation criteria sheet
-                    }
-                    
-                    
-                    ChipButton(title: "Keywords") {
-                        // TODO: Show keywords sheet
-                    }
-                    
-                    
-                    ChipButton(title: "View Attempts") {
-                        // TODO: Navigate to attempts
-                    }
+                    ChipButton(title: "Evaluation Criteria") { vm.didTapEvaluationCriteria() }
+                    ChipButton(title: "Keywords") { vm.didTapKeywords() }
+                    ChipButton(title: "View Attempts") { vm.didTapViewAttempts() }
                     
                 }
 

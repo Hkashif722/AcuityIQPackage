@@ -127,6 +127,7 @@ public struct SearchTextField: View {
             // TextField or Text (based on editable mode)
             if isEditable {
                 TextField(placeholder, text: $text)
+                    .tint(.blue)
                     .onChange(of: text) { newValue in
                         onChange?(newValue)
                     }
@@ -135,7 +136,6 @@ public struct SearchTextField: View {
                     }
                     .font(font)
                     .foregroundStyle(textColor)
-                    // ✅ Remove the .placeholder() modifier
                     .minimumScaleFactor(0.7)
             }else {
                 Text(displayText ?? placeholder)

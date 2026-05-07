@@ -15,7 +15,8 @@ public struct ManagerEvaluationListView: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
+            searchView
             scenarioListView
                 .stateDrivenViewPkg(
                     loadingState: vm.loadingState,
@@ -35,6 +36,16 @@ public struct ManagerEvaluationListView: View {
 
 // MARK: - Sub-Views
 private extension ManagerEvaluationListView {
+
+    var searchView: some View {
+        SearchTextField(
+            text: $vm.searchText,
+            placeholder: "Search scenarios...",
+            font: .system(size: 14, weight: .medium),
+            height: 45
+        )
+        .padding(10)
+    }
 
     var scenarioListView: some View {
         ManagerEvaluationScenarioListView(

@@ -5,14 +5,6 @@
 //  Created by Kashif Hussain on 13/04/26.
 //
 
-
-//
-//  ManagerEvaluationScoreCardView.swift
-//  AcuityIQPackage
-//
-//  Created by Kashif Hussain on 13/04/26.
-//
-
 import SwiftUI
 
 struct ManagerEvaluationScoreCardView: View {

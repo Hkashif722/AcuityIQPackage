@@ -16,12 +16,14 @@ struct ManagerEvaluationListDataModel {
             let page: Int
             let pageSize: Int
             let users: [Int]?
+            var search: String = ""
 
             func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 try container.encode(page, forKey: .page)
                 try container.encode(pageSize, forKey: .pageSize)
                 try container.encodeIfPresent(users, forKey: .users)
+                try container.encode(search, forKey: .search)
             }
         }
 
@@ -46,7 +48,7 @@ struct ManagerEvaluationListDataModel {
     // MARK: - ScenarioAttempt
 
     struct ScenarioAttempt: Codable, Identifiable {
-        let id: UUID = UUID()
+        var id: String { "\(userId ?? 0)_\(scenarioId)" }
         let userId: Int?
         let userName: String?
         let scenarioId: Int

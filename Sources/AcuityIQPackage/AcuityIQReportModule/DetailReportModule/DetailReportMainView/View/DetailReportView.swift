@@ -33,6 +33,7 @@ struct DetailReportView: View {
             Spacer()
         }
         .loadingOverlayViewPkg(state: vm.loadingState)
+        .customBackButtonPkg(navTitle: "Simulation Report",action: vm.goBack)
     }
     
     @ViewBuilder

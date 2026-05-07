@@ -32,7 +32,9 @@ class RolePlayKitService {
         projectID: Int,
         courseID: Int,
         moduleID: Int,
-        onDismiss: (() -> Void)? = nil
+        moduleStatus: String? = nil,
+        onDismiss: (() -> Void)? = nil,
+        onSubmit: (() -> Void)? = nil
     ) {
         Task {
             if let kit = await RoleplayKitModuleManager.shared.rolePlayKit {
@@ -41,7 +43,9 @@ class RolePlayKitService {
                     projectID: projectID,
                     courseID: courseID,
                     moduleID: moduleID,
-                    onDismiss: onDismiss
+                    moduleStatus: moduleStatus,
+                    onDismiss: onDismiss,
+                    onSubmit: onSubmit
                 )
             } else {
                 assertionFailure("RolePlayKit is not initialized. Ensure RoleplayKitModuleManager is configured before calling startRolePlay.")
