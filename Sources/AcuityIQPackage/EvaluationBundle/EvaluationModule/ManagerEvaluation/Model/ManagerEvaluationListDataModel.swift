@@ -48,7 +48,7 @@ struct ManagerEvaluationListDataModel {
     // MARK: - ScenarioAttempt
 
     struct ScenarioAttempt: Codable, Identifiable {
-        var id: String { "\(userId ?? 0)_\(scenarioId)" }
+        var id: UUID = UUID()
         let userId: Int?
         let userName: String?
         let scenarioId: Int

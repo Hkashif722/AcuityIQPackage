@@ -15,7 +15,12 @@ class EvaluateModuleViewModel: RoutableViewModel {
 
     // MARK: - Published State
     @Published var formEntries: [EvaluateModuleDataModel.EvaluationFormEntry] = []
-    @Published var overallScoreText: String = ""
+    @Published var overallScoreText: String = "" {
+        didSet {
+            let filtered = Self.filterOneDecimalPlace(overallScoreText)
+            if filtered != overallScoreText { overallScoreText = filtered }
+        }
+    }
 
     private var attempt: ManagerEvaluationListDataModel.ScenarioAttempt.Attempt { navModel.attempt }
     private var scenario: ManagerEvaluationListDataModel.ScenarioAttempt { navModel.scenario }
@@ -77,6 +82,20 @@ private extension EvaluateModuleViewModel {
             return false
         }
         return true
+    }
+}
+
+// MARK: - Input Filtering
+private extension EvaluateModuleViewModel {
+
+    static func filterOneDecimalPlace(_ input: String) -> String {
+        var result = input.filter { $0.isNumber || $0 == "." }
+        if let dotIndex = result.firstIndex(of: ".") {
+            let afterDot = result.index(after: dotIndex)
+            let decimals = result[afterDot...].filter { $0.isNumber }
+            result = String(result[..<dotIndex]) + "." + String(decimals.prefix(1))
+        }
+        return result
     }
 }
 

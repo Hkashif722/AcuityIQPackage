@@ -30,9 +30,6 @@ let package = Package(
         .package(
             url: "https://github.com/danielgindi/Charts.git",
             .upToNextMajor(from: "5.1.0")
-        ),
-        .package(
-            path: "/Users/kashifhussain/Desktop/AcuityBundle/RolePlayPackageEvents" // ← updated
         )
     ],
     targets: [
@@ -44,8 +41,7 @@ let package = Package(
                 .product(name: "NetworkService", package: "IOS_APIManager"),
                 .product(name: "SwiftUIUtilities", package: "SwiftUIUtility"),
                 .product(name: "RolePlayKit", package: "IOS_Roleplay-Kit"),
-                .product(name: "DGCharts", package: "Charts"),
-                .product(name: "RolePlayPackageEvents", package: "RolePlayPackageEvents"),
+                .product(name: "DGCharts", package: "Charts")
             ],
             resources: [
                 .process("Resource/Media.xcassets")
