@@ -40,7 +40,7 @@ private extension ManagerEvaluationListView {
     var searchView: some View {
         SearchTextField(
             text: $vm.searchText,
-            placeholder: "Search scenarios...",
+            placeholder: "Search by course name",
             font: .system(size: 14, weight: .medium),
             height: 45
         )

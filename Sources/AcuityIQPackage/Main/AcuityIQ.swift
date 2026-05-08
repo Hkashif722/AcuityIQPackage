@@ -78,15 +78,44 @@ extension AcuityIQ {
     /// Use this when your SwiftUI app already has a router.
     /// - Parameters:
     ///   - router: The AnyRouter instance from SwiftfulRouting
-    ///   - scenarioId: The scenario ID for upload
+    ///   - projectID: The project ID used to fetch and match the scenario
+    ///   - moduleId: Optional module ID
+    ///   - moduleStatus: Optional module status
+    ///   - courseId: Optional course ID
+    ///   - attempt: Optional tuple containing total and remaining attempts
+    ///   - moduleAttempts: Optional array of module attempt metadata dictionaries
     ///   - onDismiss: Optional callback when the flow is dismissed
     public func showReportUpload(
         router: AnyRouter,
-        scenarioId: Int,
+        projectID: Int,
+        moduleId: Int? = nil,
+        moduleStatus: String? = nil,
+        courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)? = nil,
+        moduleAttempts: [[String: Any]]? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
         guard checkConfigured() else { return }
-        AcuityIQNavigationService.shared.showReportUpload(router: router, scenarioId: scenarioId, onDismiss: onDismiss)
+
+        Task { @MainActor in
+            do {
+                guard let matchedScenario = try await fetchScenario(for: projectID) else { return }
+
+                let navModel = NavigationViewModel.AcuityReportUploadNavModel(
+                    scenarioModel: matchedScenario,
+                    isFromModule: true,
+                    projectID: projectID,
+                    moduleId: moduleId,
+                    moduleStatus: moduleStatus,
+                    courseId: courseId,
+                    attempt: attempt,
+                    moduleAttempts: moduleAttempts
+                )
+                AcuityIQNavigationService.shared.showReportUpload(router: router, navModel: navModel, onDismiss: onDismiss)
+            } catch {
+                Logger.shared.log(.error, message: "Error fetching scenarios: \(error.localizedDescription)")
+            }
+        }
     }
 }
 
@@ -106,6 +135,59 @@ extension AcuityIQ {
     ) {
         guard checkConfigured() else { return }
         AcuityIQNavigationService.shared.showManagerEvaluationList(router: router, userID: userID, onDismiss: onDismiss)
+    }
+}
+
+// MARK: - SwiftUI Presentation (Role Play Dashboard)
+
+extension AcuityIQ {
+
+    /// Show Role Play Dashboard using SwiftfulRouting.
+    /// Use this when your SwiftUI app already has a router.
+    /// - Parameters:
+    ///   - router: The AnyRouter instance from SwiftfulRouting
+    ///   - rolePlayTitle: The title for the role play session
+    ///   - projectID: The project ID for this role play session
+    ///   - onDismiss: Optional callback when the flow is dismissed
+    public func showRolePlayDashboard(
+        router: AnyRouter,
+        rolePlayTitle: String,
+        projectID: Int,
+        moduleId: Int? = nil,
+        moduleStatus: String? = nil,
+        courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)? = nil,
+        moduleAttempts: [[String: Any]]? = nil,
+        evaluationParameters: [[String: Any]]? = nil,
+        keywords: [String]? = nil,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        guard checkConfigured() else { return }
+
+        let navModel = NavigationViewModel.RolePlayDashboardNavModel(
+            rolePlayTitle: rolePlayTitle,
+            projectID: projectID,
+            moduleId: moduleId,
+            moduleStatus: moduleStatus,
+            courseId: courseId,
+            attempt: attempt,
+            moduleAttempts: moduleAttempts,
+            evaluationParameters: evaluationParameters,
+            keywords: keywords
+        )
+        AcuityIQNavigationService.shared.showRolePlayDashboard(
+            router: router,
+            rolePlayTitle: navModel.rolePlayTitle,
+            projectID: navModel.projectID,
+            moduleId: navModel.moduleId,
+            moduleStatus: navModel.moduleStatus,
+            courseId: navModel.courseId,
+            attempt: navModel.attempt,
+            moduleAttempts: navModel.moduleAttempts,
+            evaluationParameters: navModel.evaluationParameters,
+            keywords: navModel.keywords,
+            onDismiss: onDismiss
+        )
     }
 }
 
@@ -410,10 +492,24 @@ public extension View {
     /// Use this when you have access to a router in your SwiftUI view.
     func navigateToAcuityReportUpload(
         router: AnyRouter,
-        scenarioId: Int,
+        projectID: Int,
+        moduleId: Int? = nil,
+        moduleStatus: String? = nil,
+        courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)? = nil,
+        moduleAttempts: [[String: Any]]? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
-        AcuityIQ.shared.showReportUpload(router: router, scenarioId: scenarioId, onDismiss: onDismiss)
+        AcuityIQ.shared.showReportUpload(
+            router: router,
+            projectID: projectID,
+            moduleId: moduleId,
+            moduleStatus: moduleStatus,
+            courseId: courseId,
+            attempt: attempt,
+            moduleAttempts: moduleAttempts,
+            onDismiss: onDismiss
+        )
     }
 
     /// Imperatively navigate to Manager Evaluation List.
@@ -424,6 +520,36 @@ public extension View {
         onDismiss: (() -> Void)? = nil
     ) {
         AcuityIQ.shared.showManagerEvaluationList(router: router, userID: userID, onDismiss: onDismiss)
+    }
+
+    /// Imperatively navigate to Role Play Dashboard.
+    /// Use this when you have access to a router in your SwiftUI view.
+    func navigateToRolePlayDashboard(
+        router: AnyRouter,
+        rolePlayTitle: String,
+        projectID: Int,
+        moduleId: Int? = nil,
+        moduleStatus: String? = nil,
+        courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)? = nil,
+        moduleAttempts: [[String: Any]]? = nil,
+        evaluationParameters: [[String: Any]]? = nil,
+        keywords: [String]? = nil,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        AcuityIQ.shared.showRolePlayDashboard(
+            router: router,
+            rolePlayTitle: rolePlayTitle,
+            projectID: projectID,
+            moduleId: moduleId,
+            moduleStatus: moduleStatus,
+            courseId: courseId,
+            attempt: attempt,
+            moduleAttempts: moduleAttempts,
+            evaluationParameters: evaluationParameters,
+            keywords: keywords,
+            onDismiss: onDismiss
+        )
     }
 }
 

@@ -49,18 +49,18 @@ public class AcuityIQNavigationService {
     /// Navigates to the AcuityReportUploadView
     /// - Parameters:
     ///   - router: The router to use for navigation
-    ///   - scenarioId: The scenario ID for upload
+    ///   - navModel: The navigation model containing scenario and upload context
     ///   - onDismiss: Optional callback when the user dismisses the flow
-    public func showReportUpload(
+    func showReportUpload(
         router: AnyRouter,
-        scenarioId: Int,
+        navModel: NavigationViewModel.AcuityReportUploadNavModel,
         onDismiss: (() -> Void)? = nil
     ) {
         self.currentRouter = router
         self.onDismissCallback = onDismiss
 
         router.showScreen(.push) { router in
-//            AcuityReportUploadView(router: router, scenarioId: scenarioId)
+            AcuityReportUploadView(router: router, navModel: navModel)
         }
     }
 
@@ -80,6 +80,44 @@ public class AcuityIQNavigationService {
 
         router.showScreen(.push) { router in
             ManagerEvaluationListView(router: router, userID: userID)
+        }
+    }
+
+    // MARK: - Public Methods - Role Play Dashboard Entry Point
+
+    /// Navigates to the RolePlayDashboardView
+    /// - Parameters:
+    ///   - router: The router to use for navigation
+    ///   - navModel: The navigation model containing role play context
+    ///   - onDismiss: Optional callback when the user dismisses the flow
+    public func showRolePlayDashboard(
+        router: AnyRouter,
+        rolePlayTitle: String,
+        projectID: Int? = nil,
+        moduleId: Int? = nil,
+        moduleStatus: String? = nil,
+        courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)? = nil,
+        moduleAttempts: [[String: Any]]? = nil,
+        evaluationParameters: [[String: Any]]? = nil,
+        keywords: [String]? = nil,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        self.currentRouter = router
+        self.onDismissCallback = onDismiss
+        let navModel = NavigationViewModel.RolePlayDashboardNavModel(
+            rolePlayTitle: rolePlayTitle,
+            projectID: projectID,
+            moduleId: moduleId,
+            moduleStatus: moduleStatus,
+            courseId: courseId,
+            attempt: attempt,
+            moduleAttempts: moduleAttempts,
+            evaluationParameters: evaluationParameters,
+            keywords: keywords
+        )
+        router.showScreen(.push) { router in
+            RolePlayDashboardView(router: router, navModel: navModel)
         }
     }
 

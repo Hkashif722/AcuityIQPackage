@@ -29,17 +29,32 @@ public struct AcuityIQKit: Sendable {
     /// Shows the AcuityIQ Report Upload view
     /// - Parameters:
     ///   - router: The router to use for navigation
-    ///   - scenarioId: The scenario ID for upload
+    ///   - projectID: The project ID (corresponds to scenarioId)
+    ///   - moduleId: Optional module ID
+    ///   - moduleStatus: Optional module status
+    ///   - courseId: Optional course ID
+    ///   - attempt: Optional tuple containing total and remaining attempts
+    ///   - moduleAttempts: Optional array of module attempt metadata dictionaries
     ///   - onDismiss: Optional callback when the user dismisses the flow
     @MainActor
     public func showReportUpload(
         router: AnyRouter,
-        scenarioId: Int,
+        projectID: Int,
+        moduleId: Int? = nil,
+        moduleStatus: String? = nil,
+        courseId: Int? = nil,
+        attempt: (total: Int?, left: Int?)? = nil,
+        moduleAttempts: [[String: Any]]? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
-        AcuityIQNavigationService.shared.showReportUpload(
+        AcuityIQ.shared.showReportUpload(
             router: router,
-            scenarioId: scenarioId,
+            projectID: projectID,
+            moduleId: moduleId,
+            moduleStatus: moduleStatus,
+            courseId: courseId,
+            attempt: attempt,
+            moduleAttempts: moduleAttempts,
             onDismiss: onDismiss
         )
     }
