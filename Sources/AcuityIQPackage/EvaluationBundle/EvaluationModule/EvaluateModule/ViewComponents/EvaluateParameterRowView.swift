@@ -101,8 +101,8 @@ private extension EvaluateParameterRowView {
     }
 
     var scoreFieldBorderColor: Color {
-        guard !entry.scoreText.isEmpty else {
-            return Color(.separator).opacity(0.4)
+        if entry.scoreText.isEmpty {
+            return Color(hex: "#ef4444").opacity(0.7)
         }
         if let score = Double(entry.scoreText),
            score >= 1, score <= Double(entry.maxScore) {

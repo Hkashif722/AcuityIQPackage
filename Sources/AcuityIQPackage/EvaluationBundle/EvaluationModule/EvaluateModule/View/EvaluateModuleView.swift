@@ -99,6 +99,10 @@ private extension EvaluateModuleView {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(overallScoreBorderColor, lineWidth: 1.2)
                 )
+                .onChange(of: vm.overallScoreText) { newValue in
+                    let filtered = EvaluateModuleViewModel.filterOneDecimalPlace(newValue)
+                    if filtered != newValue { vm.overallScoreText = filtered }
+                }
 
             Text("Score out of 10")
                 .font(.caption)
@@ -111,8 +115,8 @@ private extension EvaluateModuleView {
     }
 
     var overallScoreBorderColor: Color {
-        guard !vm.overallScoreText.isEmpty else {
-            return Color(.separator).opacity(0.4)
+        if vm.overallScoreText.isEmpty {
+            return Color(hex: "#ef4444").opacity(0.7)
         }
         if let score = Double(vm.overallScoreText), score >= 0, score <= 10 {
             return Color(hex: "#10b981").opacity(0.6)
@@ -127,18 +131,20 @@ private extension EvaluateModuleView {
     var submitBar: some View {
         VStack(spacing: 0) {
             Divider()
-            Button(action: vm.didTapSubmit) {
-                Text("Submit Evaluation")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 15)
-                    .background(Color(hex: "#5b6afa"))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color(.systemBackground))
+            SwiftUIUtility
+                .RectangularIconButton(
+                    title: "Save",
+                    font: .headline,
+                    backgroundColor: Color(hex: "#5b6afa"),
+                    foregroundColor: .white,
+                    cornerRadius: 14,
+                    height: 50,
+                    action: vm.didTapSubmit
+                )
+                .disabledWithOpacityPkg(!vm.isFormComplete)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(Color(.systemBackground))
         }
     }
 }
