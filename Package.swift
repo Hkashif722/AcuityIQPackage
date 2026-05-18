@@ -25,7 +25,8 @@ let package = Package(
             branch: "update"
         ),
         .package(
-            path: "/Users/kashifhussain/Desktop/RolePlayKit/IOS_Roleplay-Kit"
+            url: "https://dev.azure.com/EnthralltechDevOps/IOS_Roleplay-Kit",
+            branch: "main"
         ),
         .package(
             url: "https://github.com/danielgindi/Charts.git",
