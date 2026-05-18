@@ -13,6 +13,7 @@ public struct AcuityIQPackageConfig: Sendable {
     public let isBlobEnabled: Bool
     public let dateConfiguration: String
     public let acuityIQEnvironmentConfig: AcuityIQENV
+    public let sas_token: String
     public let tokenProvider: @Sendable () -> String?
 
     public init(
@@ -24,6 +25,7 @@ public struct AcuityIQPackageConfig: Sendable {
         orgCode: String,
         dateConfiguration: String,
         acuityIQENV: AcuityIQENV,
+        sas_token: String,
         tokenProvider: @escaping @Sendable () -> String?
     ) {
         APIConst.baseURL = baseURL
@@ -34,6 +36,7 @@ public struct AcuityIQPackageConfig: Sendable {
         self.orgCode = orgCode
         self.dateConfiguration = dateConfiguration
         self.acuityIQEnvironmentConfig = acuityIQENV
+        self.sas_token = sas_token
         self.tokenProvider = tokenProvider
     }
 }

@@ -17,3 +17,13 @@ extension String {
         return components[0] * 60 + components[1]
     }
 }
+
+
+extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
+    
+    func normalizedFilePath() -> String {
+        let normalized = self.replacingOccurrences(of: "\\/", with: "/")
+        return normalized.components(separatedBy: "?").first ?? normalized
+    }
+}

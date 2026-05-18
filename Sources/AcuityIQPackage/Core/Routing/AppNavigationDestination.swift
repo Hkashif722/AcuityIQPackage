@@ -22,7 +22,7 @@ enum AppNavigationDestination {
     case keywordsView(keywords: [String])
     case herculeanEffortView(strengths: [String])
     case attemptBadgeView(attemptNumber: Int, totalAttempts: Int, attemptsUsed: Int)
-    case reportUploadView(scenarioId: Int)
+    case reportUploadView(navModel: NavigationViewModel.AcuityReportUploadNavModel)
 
 }
 
@@ -66,9 +66,9 @@ extension AppNavigationDestination: NavigationProtocol {
                 AttemptBadgeView(router: router, attemptNumber: attemptNumber, totalAttempts: totalAttempts, attemptsUsed: attemptsUsed)
             }
 
-        case .reportUploadView(let scenarioId):
+        case .reportUploadView(let navModel):
             self.pushScreen(router) { router in
-                AcuityReportUploadView(router: router, scenarioId: scenarioId)
+                AcuityReportUploadView(router: router, navModel: navModel)
             }
 
         }

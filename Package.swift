@@ -21,7 +21,7 @@ let package = Package(
             .upToNextMinor(from: "1.0.0")
         ),
         .package(
-            path: "/Users/kashifhussain/Documents/SwiftUIUtility/SwiftUIUtility"
+            path: "/Users/kashifhussain/Desktop/OJT_New_Design/SwiftUIUtility/SwiftUIUtility"
         ),
         .package(
             url: "https://github.com/danielgindi/Charts.git",

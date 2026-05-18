@@ -27,6 +27,10 @@ public actor AcuityIQAPIManager {
         config?.dateConfiguration ?? ""
     }
 
+    nonisolated internal var sasToken: String {
+        config?.sas_token ?? ""
+    }
+    
     nonisolated internal var ENV: AcuityIQENV? {
         config?.acuityIQEnvironmentConfig
     }

@@ -58,7 +58,12 @@ extension AcuityReportViewModel {
     func didTapUploadAttempt(_ scenario: AcuityIQReportDataModel.Scenario) {
         NavigationService.shared.navigate(
             using: router,
-            to: AppNavigationDestination.reportUploadView(scenarioId: scenario.scenarioId)
+            to: AppNavigationDestination
+                .reportUploadView(
+                    navModel: .init(
+                        scenarioModel: AcuityIQReportDataModel.Scenario.preview
+                    )
+                )
         )
     }
 }

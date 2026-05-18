@@ -20,4 +20,8 @@ extension NavigationViewModel {
         let secnarioAttempt: AcuityIQReportDataModel.Scenario.Attempt
     }
     
+    public struct AcuityReportUploadNavModel {
+        let scenarioModel: AcuityIQReportDataModel.Scenario
+    }
+    
 }
